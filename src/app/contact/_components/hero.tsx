@@ -9,7 +9,7 @@ export default function Hero() {
             Get In Touch
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            We would love to hear from you! Please fill out the form below and we'll get back to you as soon as possible.
+            We would love to hear from you! Please fill out the form below and we&#39;ll get back to you as soon as possible.
           </p>
         </div>
 
