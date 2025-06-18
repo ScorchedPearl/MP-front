@@ -25,3 +25,4 @@ export const useCurrentUser=()=>{
 
   return { currentUser, isLoading };
 }
+
