@@ -28,11 +28,21 @@ const UserContext = createContext<UserContextType>({
 });
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, isLoading } = useCurrentUser();
-  async function googleAuth(token:string){
+  async function googleAuth(token: string) {
     try {
-      console.log("Google Auth Token: ", token);
-
-      return token;
+      const response = await axios.post(`http://localhost:2706/api/v1/auth/google`, {
+        token
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.data?.token) {
+        localStorage.setItem('__Pearl_Token', response.data.token);
+      }
+      
+      return response.data.token;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to authenticate');
@@ -44,8 +54,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   async function sendOTP(email: string) {
     const otp = generateOTP();
     localStorage.setItem("currentOtp", otp);
-    const message=`Your OTP is ${otp}.Thank You For Registering With Pearl`
-    const response = await axios.post(``, {
+    const message=`Your OTP is ${otp}.Thank You For Registering With MarcelPearl`
+    const response = await axios.post(`http://localhost:2706/api/v1/auth/otpVerification`, {
       email,
       otp: message,
     }, {
@@ -53,10 +63,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         'Content-Type': 'application/json',
       },
     });
-    return response as unknown as string;
+    return "OTP sent to email";
   }
   async function signUp(email: string, password: string,name:string) {
-    const response = await axios.post(`http://localhost:8080/api/v1/auth/register`, {
+    const response = await axios.post(`http://localhost:2706/api/v1/auth/signup`, {
         name,
         email,
         password
@@ -74,7 +84,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
   }
   async function signIn(email: string, password: string) {
-    const response = await axios.post(`http://localhost:8080/api/v1/auth/authenticate`, {
+    const response = await axios.post(`http://localhost:2706/api/v1/auth/signin`, {
         email,
         password
       }, {
@@ -90,20 +100,29 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
        localStorage.setItem('__Pearl_Token',responseData.token)
        }
   }
-  async function changePassword() {
-    // await graphqlClient.request(changePasswordMutation,changePasswordPayload);
-    //       console.log("Password Changed");
-    //       const token = await graphqlClient.request<TokendiffResponse>(
-    //         verifyCredentialsTokenQuery,
-    //         payload
-    //       );
-    //       window.localStorage.setItem(
-    //         "__Pearl_Token",
-    //         token.verifyCredentialsToken as string
-    //       );
-    //       }catch(err){
-    //         return err;
-    //       }
+  async function changePassword(email: string, newPassword: string) {
+    const token = localStorage.getItem("currentOtp");
+    if (!token) {
+      throw new Error("OTP token is missing. Please verify your OTP again.");
+    }
+    try {
+      const response = await axios.post(
+        `http://localhost:2706/api/v1/auth/reset-password`,
+        {
+          email,
+          newPassword,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      console.log("Password reset response:", response.data);
+    } catch (error: any) {
+      console.error("Failed to reset password:", error?.response?.data || error.message);
+    }
   }
   return (
     <UserContext.Provider value={{ currentUser, isLoading ,googleAuth,generateOTP,sendOTP,changePassword,signUp,signIn}}>

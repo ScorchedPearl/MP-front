@@ -4,7 +4,7 @@ export const currentUserFetcher = async () => {
  try {
    const token="Bearer "+localStorage.getItem('__Pearl_Token') || '';
    console.log(token)
-   const user = await axios.get("http://localhost:8080/api/v1/users/current-user", {
+   const user = await axios.get("http://localhost:2706/api/v1/user/current-user", {
      headers: {
        Authorization: token,
      },
@@ -17,7 +17,7 @@ export const currentUserFetcher = async () => {
  } catch (error) {
    console.error("Error fetching user data:", error);
  }
-};
+}
 
 
 

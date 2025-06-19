@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import OTPEntryPage from "./optpage";
 export default function AuthPage() {
-   const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const {
     register,
     handleSubmit,
@@ -40,40 +40,54 @@ export default function AuthPage() {
   }
   const onSubmit = async ( data: { email?: string; password?: string; name?: string; confirmPassword?:string }) => {
     console.log("Form Data:", data);
-    if(isForgotPassword){
-      const email=data.email;
-      const password=data.password;
+    if (isForgotPassword) {
+      const email = data.email;
+      const password = data.password;
       setIsOtpPage(true);
-      const response=await sendOTP(email as string);
-      if(!response){
-        throw new Error('Failed to send OTP')
+  
+      const response = await sendOTP(email as string);
+      if (!response) {
+        throw new Error('Failed to send OTP');
       }
+  
       await waitForOtpVerification();
-      localStorage.removeItem("currentOtp");
+  
       console.log("Changing Password");
-      changePassword(email as string,password as string)
+      await changePassword(email as string, password as string);
+  
+      localStorage.removeItem("currentOtp");
       reset();
       redirect("/");
     }
+
     if (isSignUp) {
+
       const email=data.email;
       const password=data.password;
       const name=data.name;
+
       if (data.password !== data.confirmPassword) {
         return setError("confirmPassword", {
           type: "manual",
           message: "Passwords do not match",
         });
       }
+
       setIsOtpPage(true);
       const response= await sendOTP(email as string);
       if(!response){
         throw new Error('Failed to send OTP')
       }
+
       await waitForOtpVerification();
+
       localStorage.removeItem("currentOtp");
+
       signUp(email as string,password as string,name as string)
-    } else {
+
+    } 
+
+    else {
       const email=data.email;
       const password=data.password;
       signIn(email as string,password as string)
@@ -81,6 +95,7 @@ export default function AuthPage() {
     reset();
     redirect("/");
   };
+
   const googlelogin = useGoogleLogin({
     onSuccess: async (cred: TokenResponse) => {
       console.log(cred);
@@ -90,6 +105,7 @@ export default function AuthPage() {
     onError: () => console.log("Login Failed"),
     scope: "openid profile email",
   });
+  
  return isOtpPage ? (
      <div>
        <OTPEntryPage generateOTP={generateOTP} />

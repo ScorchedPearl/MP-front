@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Menu, X } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
 
@@ -20,7 +21,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-white rounded-sm" />
-            <span className="text-xl font-bold text-white">MarcelPearl</span>
+            <Link href="/"><span className="text-xl font-bold text-white">MarcelPearl</span></Link>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">

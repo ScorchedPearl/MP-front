@@ -117,7 +117,7 @@ export default function Creator() {
           <div className="flex flex-col md:flex-row justify-between w-full py-4">
             <div className="text-white pt-2 md:pt-5">
               <div className="text-3xl sm:text-5xl font-bold py-2 sm:py-4">
-                MarcelPearl Creator
+                MarcelPearl Creators
               </div>
               <div className="text-gray-300 text-sm sm:text-base">
                 Our skills made this project come to live

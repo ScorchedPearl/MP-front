@@ -110,7 +110,7 @@ export default function Hero() {
                   Email
                 </div>
                 <div className="text-white font-mono text-sm break-all select-all p-3 bg-black border border-zinc-700 rounded-lg">
-                  marcelpearl@gmail.com
+                  marcellapearl0627@gmail.com
                 </div>
               </div>
 
