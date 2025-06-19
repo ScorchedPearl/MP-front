@@ -21,7 +21,7 @@ const DragContext = createContext<{
   togglePalette?: () => void;
   categories?: string[];
   filteredTemplates?: NodeTemplate[];
-  useProject?: () => (pos: { x: number; y: number }) => { x: number; y: number };
+  getProjector?: () => (pos: { x: number; y: number }) => { x: number; y: number };
   nodes?: Node<WorkflowNodeData>[];
   setNodes?: (nodes: Node<WorkflowNodeData>[]) => void;
   edges?: Edge[];
@@ -57,7 +57,7 @@ const DragContext = createContext<{
   togglePalette: () => {},
   categories: [],
   filteredTemplates: [],
-  useProject: () => (pos) => ({ x: pos.x, y: pos.y }),
+  getProjector: () => (pos) => ({ x: pos.x, y: pos.y }),
   nodes: [],
   setNodes: () => {},
   edges: [],
@@ -87,14 +87,15 @@ export const DragProvider = ({ children }: { children: React.ReactNode }) => {
     const [nodeIdCounter, setNodeIdCounter] = useState(1);
     const [isDragOver, setIsDragOver] = useState(false);
     const [dropPosition, setDropPosition] = useState<{ x: number; y: number } | null>(null);
-   function useProject() {
-  const [x, y, zoom] = useStore(state => state.transform);
-
+    const transform = useStore((state) => state.transform);
+    
+const projector = useMemo(() => {
+  const [x, y, zoom] = transform;
   return (pos: { x: number; y: number }) => ({
     x: (pos.x - x) / zoom,
     y: (pos.y - y) / zoom,
   });
- }
+}, [transform]);
   const categories = useMemo(() => {
     const cats = Array.from(new Set(nodeTemplates.map((t) => t.category)));
     return ["All", ...cats];
@@ -146,18 +147,18 @@ export const DragProvider = ({ children }: { children: React.ReactNode }) => {
    )
    const onNodesDelete = useCallback((nodesToDelete: Node[]) => {
     const nodeIds = nodesToDelete.map(node => node.id);
-   
-      const filteredNodes = nodes.filter((node: Node<WorkflowNodeData>) => !nodeIds.includes(node.id));
-      setNodes(filteredNodes);
-
-      const filteredEdges = edges.filter((edge: Edge) =>
-        !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)
-      );
-      setEdges(filteredEdges);
-
-  }, [setNodes, setEdges]); 
+  
+    const filteredNodes = nodes.filter((node: Node<WorkflowNodeData>) => !nodeIds.includes(node.id));
+    setNodes(filteredNodes);
+  
+    const filteredEdges = edges.filter((edge: Edge) =>
+      !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)
+    );
+    setEdges(filteredEdges);
+  
+  }, [nodes, edges, setNodes, setEdges]);
   return (
-    <DragContext.Provider value={{ isDragging, setIsDragging, selectedCategory, setSelectedCategory, draggedItem, setDraggedItem, clickedItem, setClickedItem, isPaletteOpen, setIsPaletteOpen, selectedNodes, setSelectedNodes, handleDragStart, handleClick, handleNodeSelect, togglePalette, categories, filteredTemplates, useProject, nodes, setNodes, edges, setEdges, onNodesChange, onEdgesChange, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition , onConnect, onNodesDelete }}>
+    <DragContext.Provider value={{ isDragging, setIsDragging, selectedCategory, setSelectedCategory, draggedItem, setDraggedItem, clickedItem, setClickedItem, isPaletteOpen, setIsPaletteOpen, selectedNodes, setSelectedNodes, handleDragStart, handleClick, handleNodeSelect, togglePalette, categories, filteredTemplates, getProjector: () => projector, nodes, setNodes, edges, setEdges, onNodesChange, onEdgesChange, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition , onConnect, onNodesDelete }}>
       {children}
     </DragContext.Provider>
   );

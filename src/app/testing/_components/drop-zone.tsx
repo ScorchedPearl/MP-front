@@ -1,5 +1,5 @@
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import {
   ReactFlow,
   Node,
@@ -22,9 +22,15 @@ const nodeTypes = {
 };
 
 const WorkflowCanvas = () => {
-  const { useProject, nodes, setNodes, onEdgesChange, onNodesChange, edges, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition, onConnect, onNodesDelete } = useDragContext();
+  const { getProjector, nodes, setNodes, onEdgesChange, onNodesChange, edges, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition, onConnect, onNodesDelete } = useDragContext();
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const project: (pos: { x: number; y: number }) => { x: number; y: number } = (typeof useProject === 'function' ? useProject() : undefined) || ((pos) => pos);
+  const project = useMemo(() => {
+    if (typeof getProjector === 'function') {
+      return getProjector();
+    }
+    return (pos: { x: number; y: number }) => pos;
+  }, [getProjector]);
+
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   const screenToFlowPosition = useCallback(

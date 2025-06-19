@@ -63,6 +63,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         'Content-Type': 'application/json',
       },
     });
+    if (response.status !== 200) {
+      throw new Error("Failed to send OTP");
+    }
     return "OTP sent to email";
   }
   async function signUp(email: string, password: string,name:string) {
@@ -120,8 +123,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       );
   
       console.log("Password reset response:", response.data);
-    } catch (error: any) {
-      console.error("Failed to reset password:", error?.response?.data || error.message);
+    } catch (error) {
+      const err = error as unknown as { response?: { data?: unknown }; message?: string };
+      console.error("Failed to reset password:", err?.response?.data || err?.message);
     }
   }
   return (
