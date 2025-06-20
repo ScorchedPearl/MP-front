@@ -1,10 +1,12 @@
+// Fixed version of the state context
+// src/app/flow/_state/statecontext.tsx
 
 import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
-import { Node, Edge, useNodesState, useEdgesState, OnConnect, Connection, addEdge  } from '@xyflow/react';
+import { Node, Edge } from '@xyflow/react';
 import { WorkflowNodeData, NodeTemplate } from '@/lib/mockdata';
 import { useDragContext } from '@/provider/dragprovider';
 
-// Enhanced node data structure that extends your existing one
+// Enhanced node data structure
 export interface EnhancedWorkflowNodeData extends WorkflowNodeData {
   configuration: Record<string, any>;
   executionState?: 'idle' | 'running' | 'success' | 'error';
@@ -16,7 +18,7 @@ export interface EnhancedNode extends Node<EnhancedWorkflowNodeData> {
   data: EnhancedWorkflowNodeData;
 }
 
-// Workflow execution data structure for backend
+// Workflow execution data structure
 export interface WorkflowExecutionData {
   nodes: Array<{
     id: string;
@@ -41,30 +43,25 @@ export interface WorkflowExecutionData {
 }
 
 interface CompatibleWorkflowContextType {
-  // Enhanced state management that works with your existing system
   enhancedNodes: EnhancedNode[];
   setEnhancedNodes: (nodes: EnhancedNode[]) => void;
   selectedNodeId: string | null;
+  selectedNode: EnhancedNode | null;
   
-  // Configuration management
   updateNodeConfiguration: (nodeId: string, configuration: Record<string, any>) => void;
   updateNodeData: (nodeId: string, updates: Partial<EnhancedWorkflowNodeData>) => void;
   
-  // Workflow operations
   getWorkflowExecutionData: () => WorkflowExecutionData;
   loadWorkflow: (data: WorkflowExecutionData) => void;
   
-  // Validation
   validateWorkflow: () => { isValid: boolean; errors: string[] };
   
-  // Metadata
   workflowMetadata: WorkflowExecutionData['metadata'];
   updateWorkflowMetadata: (metadata: Partial<WorkflowExecutionData['metadata']>) => void;
 }
 
 const CompatibleWorkflowContext = createContext<CompatibleWorkflowContextType | null>(null);
 
-// Enhanced Provider that works with your existing DragProvider
 export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { nodes, setNodes, edges, selectedNodes } = useDragContext();
   const [enhancedNodes, setEnhancedNodes] = useState<EnhancedNode[]>([]);
@@ -77,9 +74,18 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     lastModified: new Date(),
   });
 
+  // Debug logging
+  console.log('CompatibleWorkflowProvider state:', {
+    nodesCount: nodes?.length || 0,
+    enhancedNodesCount: enhancedNodes.length,
+    selectedNodesCount: selectedNodes?.length || 0,
+    selectedNodeId,
+    selectedNodeIds: selectedNodes?.map(n => n.id) || []
+  });
+
   // Sync with existing drag provider nodes
   useEffect(() => {
-    if (nodes) {
+    if (nodes && nodes.length > 0) {
       const enhanced = nodes.map(node => ({
         ...node,
         data: {
@@ -88,21 +94,39 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
           executionState: 'idle' as const,
         }
       })) as EnhancedNode[];
+      
+      console.log('Syncing enhanced nodes:', enhanced.map(n => ({ id: n.id, label: n.data.label })));
       setEnhancedNodes(enhanced);
+    } else {
+      setEnhancedNodes([]);
     }
   }, [nodes]);
 
-  // Track selected node
+  // Track selected node from React Flow
   useEffect(() => {
+    console.log('Selected nodes changed:', selectedNodes?.map(n => n.id) || []);
+    
     if (selectedNodes && selectedNodes.length === 1) {
-      setSelectedNodeId(selectedNodes[0].id);
+      const selectedId = selectedNodes[0].id;
+      console.log('Setting selected node ID to:', selectedId);
+      setSelectedNodeId(selectedId);
     } else {
+      console.log('Clearing selected node ID');
       setSelectedNodeId(null);
     }
   }, [selectedNodes]);
 
+  // Get the selected enhanced node
+  const selectedNode = selectedNodeId 
+    ? enhancedNodes.find(n => n.id === selectedNodeId) || null 
+    : null;
+
+  console.log('Selected node:', selectedNode ? { id: selectedNode.id, label: selectedNode.data.label } : 'none');
+
   // Update node configuration
   const updateNodeConfiguration = useCallback((nodeId: string, configuration: Record<string, any>) => {
+    console.log('Updating node configuration:', { nodeId, configuration });
+    
     // Update enhanced nodes
     setEnhancedNodes(prevNodes =>
       prevNodes.map(node =>
@@ -136,10 +160,12 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     }
 
     setWorkflowMetadata(prev => ({ ...prev, lastModified: new Date() }));
-  }, [setNodes]);
+  }, [setNodes, nodes]);
 
   // Update any node data
   const updateNodeData = useCallback((nodeId: string, updates: Partial<EnhancedWorkflowNodeData>) => {
+    console.log('Updating node data:', { nodeId, updates });
+    
     setEnhancedNodes(prevNodes =>
       prevNodes.map(node =>
         node.id === nodeId
@@ -153,8 +179,26 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
           : node
       )
     );
+
+    // Also update original nodes for basic data
+    if (setNodes && nodes) {
+      setNodes(
+        nodes.map((node: any) =>
+          node.id === nodeId
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  ...updates,
+                },
+              }
+            : node
+        )
+      );
+    }
+
     setWorkflowMetadata(prev => ({ ...prev, lastModified: new Date() }));
-  }, []);
+  }, [setNodes, nodes]);
 
   // Get workflow data for backend
   const getWorkflowExecutionData = useCallback((): WorkflowExecutionData => {
@@ -178,8 +222,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
 
   // Load workflow from backend data
   const loadWorkflow = useCallback((data: WorkflowExecutionData) => {
-    // This would need to integrate with your existing drag provider
-    // For now, just update the enhanced state
     const loadedNodes: EnhancedNode[] = data.nodes.map(nodeData => ({
       id: nodeData.id,
       type: 'workflowNode',
@@ -188,7 +230,7 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
         id: nodeData.id,
         label: nodeData.type,
         nodeType: nodeData.type,
-        icon: '🔧', // Default icon
+        icon: '🔧',
         description: '',
         configuration: nodeData.configuration,
         executionState: 'idle',
@@ -203,7 +245,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
   const validateWorkflow = useCallback((): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
 
-    // Check for trigger nodes
     const triggerNodes = enhancedNodes.filter(node => node.data.nodeType === 'trigger');
     if (triggerNodes.length === 0) {
       errors.push('Workflow must have at least one trigger node');
@@ -228,6 +269,7 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     enhancedNodes,
     setEnhancedNodes,
     selectedNodeId,
+    selectedNode,
     updateNodeConfiguration,
     updateNodeData,
     getWorkflowExecutionData,

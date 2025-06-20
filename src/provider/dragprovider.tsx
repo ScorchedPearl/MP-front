@@ -1,5 +1,8 @@
+// Fixed version of the drag provider with proper node selection tracking
+// src/provider/dragprovider.tsx
+
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from "@/lib/mockdata";
-import { Edge, useNodesState, useStore ,Node, useEdgesState, OnConnect, Connection, addEdge } from "@xyflow/react";
+import { Edge, useNodesState, useStore, Node, useEdgesState, OnConnect, Connection, addEdge, OnSelectionChangeParams } from "@xyflow/react";
 import { useContext, createContext, useState, useMemo, useCallback } from "react";
 
 const DragContext = createContext<{
@@ -13,8 +16,10 @@ const DragContext = createContext<{
   setClickedItem?: (item: NodeTemplate | null) => void;
   isPaletteOpen?: boolean;
   setIsPaletteOpen?: (isOpen: boolean) => void;
-  selectedNodes?: NodeTemplate[];
-  setSelectedNodes?: (nodes: NodeTemplate[]) => void;
+  selectedNodes?: Node<WorkflowNodeData>[];  // Changed to actual flow nodes
+  setSelectedNodes?: (nodes: Node<WorkflowNodeData>[]) => void;
+  selectedTemplateNodes?: NodeTemplate[];  // Separate for template selection
+  setSelectedTemplateNodes?: (nodes: NodeTemplate[]) => void;
   handleDragStart?: (event: React.DragEvent, template: NodeTemplate) => void;
   handleClick?: (template: NodeTemplate) => void;
   handleNodeSelect?: (template: NodeTemplate) => void;
@@ -25,10 +30,9 @@ const DragContext = createContext<{
   setNodes?: (nodes: Node<WorkflowNodeData>[]) => void;
   edges?: Edge[];
   setEdges?: (edges: Edge[]) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onNodesChange?: (changes:any) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onNodesChange?: (changes: any) => void;
   onEdgesChange?: (changes: any) => void;
+  onSelectionChange?: (params: OnSelectionChangeParams) => void;  // Added
   nodeIdCounter?: number;
   setNodeIdCounter?: (count: number) => void; 
   isDragOver?: boolean;
@@ -51,6 +55,8 @@ const DragContext = createContext<{
   setIsPaletteOpen: () => {},
   selectedNodes: [],
   setSelectedNodes: () => {},
+  selectedTemplateNodes: [],
+  setSelectedTemplateNodes: () => {},
   handleDragStart: () => {},
   handleClick: () => {},
   handleNodeSelect: () => {},
@@ -63,6 +69,7 @@ const DragContext = createContext<{
   setEdges: () => {},
   onNodesChange: () => {},
   onEdgesChange: () => {},
+  onSelectionChange: () => {},
   nodeIdCounter: 1,
   setNodeIdCounter: () => {},
   isDragOver: false, 
@@ -74,27 +81,28 @@ const DragContext = createContext<{
   useProject: () => (pos) => ({ x: pos.x, y: pos.y }),
 });
 
-
 export const FixedDragProvider = ({ children }: { children: React.ReactNode }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [draggedItem, setDraggedItem] = useState<NodeTemplate | null>(null);
   const [clickedItem, setClickedItem] = useState<NodeTemplate | null>(null);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-  const [selectedNodes, setSelectedNodes] = useState<NodeTemplate[]>([]);
+  
+  // Separate state for flow nodes vs template nodes
+  const [selectedNodes, setSelectedNodes] = useState<Node<WorkflowNodeData>[]>([]);
+  const [selectedTemplateNodes, setSelectedTemplateNodes] = useState<NodeTemplate[]>([]);
+  
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<WorkflowNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [nodeIdCounter, setNodeIdCounter] = useState(1);
   const [isDragOver, setIsDragOver] = useState(false);
   const [dropPosition, setDropPosition] = useState<{ x: number; y: number } | null>(null);
   
-  // Import your node templates
-  const { nodeTemplates } = require('@/lib/mockdata');
-  
-  console.log('DragProvider initialized with:', {
-    nodeTemplatesCount: nodeTemplates?.length || 0,
-    isPaletteOpen,
-    selectedCategory
+  console.log('DragProvider state:', {
+    selectedNodesCount: selectedNodes.length,
+    selectedNodeIds: selectedNodes.map(n => n.id),
+    nodesCount: nodes.length,
+    isPaletteOpen
   });
 
   function useProject() {
@@ -107,34 +115,28 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
 
   const categories: string[] = useMemo(() => {
     if (!nodeTemplates || nodeTemplates.length === 0) {
-      console.warn('No node templates found!');
       return ["All"];
     }
     const cats = Array.from(new Set(nodeTemplates.map((t: NodeTemplate) => t.category))) as string[];
-    console.log('Available categories:', cats);
     return ["All", ...cats];
-  }, [nodeTemplates]);
+  }, []);
 
   const filteredTemplates = useMemo(() => {
     if (!nodeTemplates) {
-      console.warn('No node templates available for filtering');
       return [];
     }
-    const filtered = selectedCategory === "All"
+    return selectedCategory === "All"
       ? nodeTemplates
       : nodeTemplates.filter((t: NodeTemplate) => t.category === selectedCategory);
-    
-    console.log('Filtered templates:', {
-      selectedCategory,
-      count: filtered.length,
-      templates: filtered.map((t: NodeTemplate) => t.label)
-    });
-    
-    return filtered;
-  }, [selectedCategory, nodeTemplates]);
+  }, [selectedCategory]);
+
+  // Handle React Flow selection changes
+  const onSelectionChange = useCallback((params: OnSelectionChangeParams) => {
+    console.log('Selection changed:', params);
+    setSelectedNodes(params.nodes as Node<WorkflowNodeData>[]);
+  }, []);
 
   const handleDragStart = (event: React.DragEvent, template: NodeTemplate) => {
-    console.log('Drag started for:', template.label);
     setDraggedItem(template);
     event.dataTransfer.setData(
       "application/reactflow",
@@ -144,26 +146,21 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
   };
 
   const handleClick = (template: NodeTemplate) => {
-    console.log('Template clicked:', template.label);
     setClickedItem(template);
     handleNodeSelect(template);
-    // Clear after a short delay
     setTimeout(() => setClickedItem(null), 1000);
   };
 
   const handleNodeSelect = (template: NodeTemplate) => {
-    console.log('Node selected:', template.label);
-    setSelectedNodes(prev => [...prev, template]);
+    setSelectedTemplateNodes(prev => [...prev, template]);
   };
 
   const togglePalette = () => {
-    console.log('Toggling palette from:', isPaletteOpen, 'to:', !isPaletteOpen);
     setIsPaletteOpen(!isPaletteOpen);
   };
 
   const onConnect: OnConnect = useCallback(
     (params: Connection) => {
-      console.log('Connecting nodes:', params);
       const newEdge: Edge = {
         ...params,
         id: `edge-${Date.now()}`,
@@ -181,19 +178,17 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
   );
 
   const onNodesDelete = useCallback((nodesToDelete: Node[]) => {
-    console.log('Deleting nodes:', nodesToDelete.map(n => n.id));
     const nodeIds = nodesToDelete.map(node => node.id);
-
     const filteredNodes = nodes.filter((node: Node<WorkflowNodeData>) => !nodeIds.includes(node.id));
     setNodes(filteredNodes);
-
     const filteredEdges = edges.filter((edge: Edge) =>
       !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)
     );
     setEdges(filteredEdges);
+    // Clear selection if deleted nodes were selected
+    setSelectedNodes(prev => prev.filter(node => !nodeIds.includes(node.id)));
   }, [nodes, edges, setNodes, setEdges]);
 
-  // Debug the context value
   const contextValue = {
     isDragging,
     setIsDragging,
@@ -207,6 +202,8 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
     setIsPaletteOpen,
     selectedNodes,
     setSelectedNodes,
+    selectedTemplateNodes,
+    setSelectedTemplateNodes,
     handleDragStart,
     handleClick,
     handleNodeSelect,
@@ -220,6 +217,7 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
     setEdges,
     onNodesChange,
     onEdgesChange,
+    onSelectionChange,
     nodeIdCounter,
     setNodeIdCounter,
     isDragOver,
@@ -230,19 +228,13 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
     onNodesDelete,
   };
 
-  console.log('DragContext value:', {
-    categoriesCount: categories.length,
-    filteredTemplatesCount: filteredTemplates.length,
-    isPaletteOpen,
-    selectedCategory
-  });
-
   return (
     <DragContext.Provider value={contextValue}>
       {children}
     </DragContext.Provider>
   );
 };
+
 export const useDragContext = () => {
   const context = useContext(DragContext);
   if (!context) {

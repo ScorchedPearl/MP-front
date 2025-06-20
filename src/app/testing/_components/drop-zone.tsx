@@ -1,3 +1,5 @@
+// Fixed version of canvas drop zone with proper selection tracking
+// src/app/testing/_components/drop-zone.tsx
 
 import React, { useCallback, useRef } from 'react';
 import {
@@ -22,10 +24,31 @@ const nodeTypes = {
 };
 
 const WorkflowCanvas = () => {
-  const { useProject, nodes, setNodes, onEdgesChange, onNodesChange, edges, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition, onConnect, onNodesDelete } = useDragContext();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const project =  useProject()
+  const { 
+    useProject, 
+    nodes, 
+    setNodes, 
+    onEdgesChange, 
+    onNodesChange, 
+    edges, 
+    nodeIdCounter, 
+    setNodeIdCounter, 
+    isDragOver, 
+    setIsDragOver, 
+    dropPosition, 
+    setDropPosition, 
+    onConnect, 
+    onNodesDelete,
+    onSelectionChange  // Added this
+  } = useDragContext();
+  
+  const project = useProject()
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
+  console.log('WorkflowCanvas render:', {
+    nodesCount: nodes?.length || 0,
+    onSelectionChange: !!onSelectionChange
+  });
 
   const screenToFlowPosition = useCallback(
     ({ x, y }: { x: number; y: number }) => {
@@ -110,6 +133,8 @@ const WorkflowCanvas = () => {
           },
         };
 
+        console.log('Adding new node:', newNode);
+
         if (setNodes) {
           setNodes([...(nodes ?? []), newNode]);
         }
@@ -139,6 +164,7 @@ const WorkflowCanvas = () => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodesDelete={onNodesDelete}
+          onSelectionChange={onSelectionChange}  // Added this line
           nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-right"
@@ -240,7 +266,7 @@ const WorkflowCanvas = () => {
           <div className="text-white/70 space-y-2 text-sm">
             <div className="flex items-center space-x-2">
               <span className="text-white/50">•</span>
-              <span>Click nodes to expand/minimize</span>
+              <span>Click nodes to select and edit properties</span>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-white/50">•</span>
