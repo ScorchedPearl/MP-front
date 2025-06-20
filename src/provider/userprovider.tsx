@@ -2,10 +2,11 @@ import { createContext,useContext } from "react";
 import { useCurrentUser } from "@/hooks/useUser";
 import axios from "axios";
 export interface User{
-  username: string;
+  name: string; 
   email: string;
-  profilePhoto: string;
+  avatar: string;
 }
+
 interface UserContextType {
   currentUser: User | null;
   isLoading: boolean;

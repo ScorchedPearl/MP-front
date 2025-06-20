@@ -16,6 +16,7 @@ export interface EnhancedNode extends Node<EnhancedWorkflowNodeData> {
 
 export interface WorkflowExecutionData {
   nodes: Array<{
+    inputs: any;
     id: string;
     type: string;
     configuration: Record<string, any>;
@@ -187,12 +188,13 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [setNodes, nodes]);
 
   const getWorkflowExecutionData = useCallback((): WorkflowExecutionData => {
-    const user={
+    const user = {
       nodes: enhancedNodes.map(node => ({
         id: node.id,
         type: node.data.nodeType,
         configuration: node.data.configuration,
         position: node.position,
+        inputs: node.data.inputs || [], 
       })),
       edges: (edges || []).map(edge => ({
         id: edge.id,
@@ -203,11 +205,12 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       })),
       metadata: workflowMetadata,
     };
+  
     console.log(user);
     return user;
-    
+  
   }, [enhancedNodes, edges, workflowMetadata]);
-
+  
   // Load workflow from backend data
   const loadWorkflow = useCallback((data: WorkflowExecutionData) => {
     const loadedNodes: EnhancedNode[] = data.nodes.map(nodeData => ({

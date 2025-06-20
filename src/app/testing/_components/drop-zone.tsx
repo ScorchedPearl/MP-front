@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css';
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from '@/lib/mockdata';
 import WorkflowNode from './_components/wokrflowNode';
 import { useDragContext } from '@/provider/dragprovider';
+import SaveWorkflowButton from '@/components/workflow/SaveWorkflowButton';
 
 export type CustomNode = Node<WorkflowNodeData> 
 
@@ -297,6 +298,7 @@ const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
             </div>
           </div>
         </div>
+        <div className='mt-3'><SaveWorkflowButton /></div>
       </div>
     </div>
   );

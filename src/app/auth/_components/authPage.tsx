@@ -57,7 +57,7 @@ export default function AuthPage() {
   
       localStorage.removeItem("currentOtp");
       reset();
-      redirect("/");
+      redirect("/flow");
     }
 
     if (isSignUp) {
@@ -101,6 +101,7 @@ export default function AuthPage() {
       console.log(cred);
       const token = await googleAuth(cred.access_token);
       localStorage.setItem('__Pearl_Token', token);
+      redirect("/flow");
     },
     onError: () => console.log("Login Failed"),
     scope: "openid profile email",
