@@ -74,39 +74,67 @@ const DragContext = createContext<{
   useProject: () => (pos) => ({ x: pos.x, y: pos.y }),
 });
 
-export const DragProvider = ({ children }: { children: React.ReactNode }) => {
 
+export const FixedDragProvider = ({ children }: { children: React.ReactNode }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [draggedItem, setDraggedItem] = useState<NodeTemplate | null>(null);
   const [clickedItem, setClickedItem] = useState<NodeTemplate | null>(null);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [selectedNodes, setSelectedNodes] = useState<NodeTemplate[]>([]);
-   const [nodes, setNodes, onNodesChange] = useNodesState<Node<WorkflowNodeData>>([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const [nodeIdCounter, setNodeIdCounter] = useState(1);
-    const [isDragOver, setIsDragOver] = useState(false);
-    const [dropPosition, setDropPosition] = useState<{ x: number; y: number } | null>(null);
-    
-function useProject() {
-  const [x, y, zoom] = useStore(state => state.transform);
-
-  return (pos: { x: number; y: number }) => ({
-    x: (pos.x - x) / zoom,
-    y: (pos.y - y) / zoom,
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<WorkflowNodeData>>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [nodeIdCounter, setNodeIdCounter] = useState(1);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [dropPosition, setDropPosition] = useState<{ x: number; y: number } | null>(null);
+  
+  // Import your node templates
+  const { nodeTemplates } = require('@/lib/mockdata');
+  
+  console.log('DragProvider initialized with:', {
+    nodeTemplatesCount: nodeTemplates?.length || 0,
+    isPaletteOpen,
+    selectedCategory
   });
- }
-  const categories = useMemo(() => {
-    const cats = Array.from(new Set(nodeTemplates.map((t) => t.category)));
+
+  function useProject() {
+    const [x, y, zoom] = useStore(state => state.transform);
+    return (pos: { x: number; y: number }) => ({
+      x: (pos.x - x) / zoom,
+      y: (pos.y - y) / zoom,
+    });
+  }
+
+  const categories: string[] = useMemo(() => {
+    if (!nodeTemplates || nodeTemplates.length === 0) {
+      console.warn('No node templates found!');
+      return ["All"];
+    }
+    const cats = Array.from(new Set(nodeTemplates.map((t: NodeTemplate) => t.category))) as string[];
+    console.log('Available categories:', cats);
     return ["All", ...cats];
-  }, []);
+  }, [nodeTemplates]);
+
   const filteredTemplates = useMemo(() => {
-    return selectedCategory === "All"
+    if (!nodeTemplates) {
+      console.warn('No node templates available for filtering');
+      return [];
+    }
+    const filtered = selectedCategory === "All"
       ? nodeTemplates
-      : nodeTemplates.filter((t) => t.category === selectedCategory);
-  }, [selectedCategory]);
+      : nodeTemplates.filter((t: NodeTemplate) => t.category === selectedCategory);
+    
+    console.log('Filtered templates:', {
+      selectedCategory,
+      count: filtered.length,
+      templates: filtered.map((t: NodeTemplate) => t.label)
+    });
+    
+    return filtered;
+  }, [selectedCategory, nodeTemplates]);
 
   const handleDragStart = (event: React.DragEvent, template: NodeTemplate) => {
+    console.log('Drag started for:', template.label);
     setDraggedItem(template);
     event.dataTransfer.setData(
       "application/reactflow",
@@ -114,56 +142,107 @@ function useProject() {
     );
     event.dataTransfer.effectAllowed = "move";
   };
+
   const handleClick = (template: NodeTemplate) => {
+    console.log('Template clicked:', template.label);
     setClickedItem(template);
     handleNodeSelect(template);
+    // Clear after a short delay
     setTimeout(() => setClickedItem(null), 1000);
   };
+
   const handleNodeSelect = (template: NodeTemplate) => {
-      setSelectedNodes(prev => [...prev, template]);
-          // Auto-close after selection (optional)
-          // setIsPaletteOpen(false);
-    };
+    console.log('Node selected:', template.label);
+    setSelectedNodes(prev => [...prev, template]);
+  };
 
   const togglePalette = () => {
-      setIsPaletteOpen(!isPaletteOpen);
-    };
+    console.log('Toggling palette from:', isPaletteOpen, 'to:', !isPaletteOpen);
+    setIsPaletteOpen(!isPaletteOpen);
+  };
+
   const onConnect: OnConnect = useCallback(
-        (params: Connection) => {
-          const newEdge: Edge = {
-            ...params,
-            id: `edge-${Date.now()}`,
-            type: 'smoothstep',
-            animated: true,
-            style: { stroke: '#3b82f6', strokeWidth: 2 },
-            source: params.source ?? '',
-            target: params.target ?? '',
-            sourceHandle: params.sourceHandle ?? undefined,
-            targetHandle: params.targetHandle ?? undefined,
-          };
-          setEdges((eds) => addEdge(newEdge, eds));
-        },
-        [setEdges]
-   )
-   const onNodesDelete = useCallback((nodesToDelete: Node[]) => {
+    (params: Connection) => {
+      console.log('Connecting nodes:', params);
+      const newEdge: Edge = {
+        ...params,
+        id: `edge-${Date.now()}`,
+        type: 'smoothstep',
+        animated: true,
+        style: { stroke: '#3b82f6', strokeWidth: 2 },
+        source: params.source ?? '',
+        target: params.target ?? '',
+        sourceHandle: params.sourceHandle ?? undefined,
+        targetHandle: params.targetHandle ?? undefined,
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+    },
+    [setEdges]
+  );
+
+  const onNodesDelete = useCallback((nodesToDelete: Node[]) => {
+    console.log('Deleting nodes:', nodesToDelete.map(n => n.id));
     const nodeIds = nodesToDelete.map(node => node.id);
-  
+
     const filteredNodes = nodes.filter((node: Node<WorkflowNodeData>) => !nodeIds.includes(node.id));
     setNodes(filteredNodes);
-  
+
     const filteredEdges = edges.filter((edge: Edge) =>
       !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)
     );
     setEdges(filteredEdges);
-  
   }, [nodes, edges, setNodes, setEdges]);
+
+  // Debug the context value
+  const contextValue = {
+    isDragging,
+    setIsDragging,
+    selectedCategory,
+    setSelectedCategory,
+    draggedItem,
+    setDraggedItem,
+    clickedItem,
+    setClickedItem,
+    isPaletteOpen,
+    setIsPaletteOpen,
+    selectedNodes,
+    setSelectedNodes,
+    handleDragStart,
+    handleClick,
+    handleNodeSelect,
+    togglePalette,
+    categories,
+    filteredTemplates,
+    useProject,
+    nodes,
+    setNodes,
+    edges,
+    setEdges,
+    onNodesChange,
+    onEdgesChange,
+    nodeIdCounter,
+    setNodeIdCounter,
+    isDragOver,
+    setIsDragOver,
+    dropPosition,
+    setDropPosition,
+    onConnect,
+    onNodesDelete,
+  };
+
+  console.log('DragContext value:', {
+    categoriesCount: categories.length,
+    filteredTemplatesCount: filteredTemplates.length,
+    isPaletteOpen,
+    selectedCategory
+  });
+
   return (
-    <DragContext.Provider value={{ isDragging, setIsDragging, selectedCategory, setSelectedCategory, draggedItem, setDraggedItem, clickedItem, setClickedItem, isPaletteOpen, setIsPaletteOpen, selectedNodes, setSelectedNodes, handleDragStart, handleClick, handleNodeSelect, togglePalette, categories, filteredTemplates, useProject, nodes, setNodes, edges, setEdges, onNodesChange, onEdgesChange, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition , onConnect, onNodesDelete }}>
+    <DragContext.Provider value={contextValue}>
       {children}
     </DragContext.Provider>
   );
 };
-
 export const useDragContext = () => {
   const context = useContext(DragContext);
   if (!context) {
