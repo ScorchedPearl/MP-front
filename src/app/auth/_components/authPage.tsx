@@ -21,7 +21,12 @@ export default function AuthPage() {
   } = useForm();
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isOtpPage,setIsOtpPage ] = useState(false); 
-  const { googleAuth, generateOTP, sendOTP, changePassword, signUp, signIn } = useUser();
+  const { currentUser,googleAuth, generateOTP, sendOTP, changePassword, signUp, signIn } = useUser();
+  useEffect(() => {
+    if (currentUser) {
+      redirect("/flow");
+    }
+  }, [currentUser]);
   async function waitForOtpVerification(checkInterval = 100, timeout = 30000) {
     return new Promise((resolve, reject) => {
       const interval = setInterval(() => {
