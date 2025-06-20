@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, Code2 } from "lucide-react";
+import Link from "next/link";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen bg-black overflow-hidden">
+    <section id="hero" className="relative min-h-screen bg-black overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
       </div>
@@ -39,6 +40,7 @@ const Hero = () => {
 
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20">
+            <Link href="/auth">
             <Button 
               size="lg" 
               className="bg-white text-black hover:bg-white/90 px-8 py-6 text-lg rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl"
@@ -46,7 +48,8 @@ const Hero = () => {
               Start building
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            
+            </Link>
+            <Link href="/testing">
             <Button 
               variant="outline" 
               size="lg"
@@ -55,10 +58,11 @@ const Hero = () => {
               <Play className="mr-2 w-5 h-5" />
               Watch demo
             </Button>
+            </Link>
           </div>
 
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto select-none">
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
               <Sparkles className="w-8 h-8 text-cyan-400 mb-4 mx-auto" />
               <h3 className="text-white font-semibold mb-2">AI-Powered</h3>
