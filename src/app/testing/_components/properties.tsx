@@ -1,27 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Settings, 
   Save, 
   Plus, 
   Trash2, 
-  Copy,
-  Eye,
-  EyeOff,
-  ChevronDown,
-  ChevronRight,
+  RotateCcw,
   AlertCircle,
-  GripVertical,
-  PanelRightClose,
-  PanelRightOpen,
-  CheckCircle,
-  XCircle,
-  Play,
-  Pause,
-  RotateCcw
+  Bug
 } from 'lucide-react';
-import { useCompatibleWorkflow } from '@/app/flow/_state/statecontext';
+import { useWorkflow } from '@/provider/statecontext';
 
-// Input Components with validation
 const TextInput: React.FC<{
   value: string;
   onChange: (value: string) => void;
@@ -78,38 +66,6 @@ const NumberInput: React.FC<{
   </div>
 );
 
-const SelectInput: React.FC<{
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  error?: string;
-  required?: boolean;
-}> = ({ value, onChange, options, error, required }) => (
-  <div className="space-y-1">
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      required={required}
-      className={`w-full px-3 py-2 bg-black/40 border rounded-sm text-white focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm backdrop-blur-sm ${
-        error ? 'border-red-400 ring-red-400/20' : 'border-white/10'
-      }`}
-    >
-      <option value="">Select an option</option>
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-    {error && (
-      <div className="flex items-center space-x-1 text-red-400 text-xs">
-        <AlertCircle className="w-3 h-3" />
-        <span>{error}</span>
-      </div>
-    )}
-  </div>
-);
-
 const CheckboxInput: React.FC<{
   value: boolean;
   onChange: (value: boolean) => void;
@@ -127,7 +83,7 @@ const CheckboxInput: React.FC<{
         value ? 'bg-cyan-400 border-cyan-400' : 'bg-black/40'
       }`}>
         {value && (
-          <CheckCircle className="w-3 h-3 text-black absolute top-0.5 left-0.5" />
+          <div className="w-3 h-3 text-black absolute top-0.5 left-0.5 text-xs">✓</div>
         )}
       </div>
     </div>
@@ -135,261 +91,118 @@ const CheckboxInput: React.FC<{
   </label>
 );
 
-const TextAreaInput: React.FC<{
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  rows?: number;
-  error?: string;
-  required?: boolean;
-}> = ({ value, onChange, placeholder, rows = 3, error, required }) => (
-  <div className="space-y-1">
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      required={required}
-      className={`w-full px-3 py-2 bg-black/40 border rounded-sm text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm resize-none backdrop-blur-sm ${
-        error ? 'border-red-400 ring-red-400/20' : 'border-white/10'
-      }`}
-    />
-    {error && (
-      <div className="flex items-center space-x-1 text-red-400 text-xs">
-        <AlertCircle className="w-3 h-3" />
-        <span>{error}</span>
-      </div>
-    )}
-  </div>
-);
 
-// Enhanced field renderer with validation
-const FieldRenderer: React.FC<{
-  fieldKey: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onChange: (value: any) => void;
-  onDelete?: () => void;
-  error?: string;
-  fieldSchema?: {
-    type: 'text' | 'number' | 'boolean' | 'select' | 'textarea' | 'email' | 'url' | 'password';
-    required?: boolean;
-    options?: { value: string; label: string }[];
-    min?: number;
-    max?: number;
-    validation?: (value: any) => string | undefined;
-  };
-}> = ({ fieldKey, value, onChange, onDelete, error, fieldSchema }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const renderInput = () => {
-    if (fieldSchema) {
-      switch (fieldSchema.type) {
-        case 'number':
-          return (
-            <NumberInput
-              value={value}
-              onChange={onChange}
-              min={fieldSchema.min}
-              max={fieldSchema.max}
-              error={error}
-              required={fieldSchema.required}
-            />
-          );
-        case 'boolean':
-          return (
-            <CheckboxInput
-              value={value}
-              onChange={onChange}
-              label={value ? 'Enabled' : 'Disabled'}
-            />
-          );
-        case 'select':
-          return (
-            <SelectInput
-              value={value}
-              onChange={onChange}
-              options={fieldSchema.options || []}
-              error={error}
-              required={fieldSchema.required}
-            />
-          );
-        case 'textarea':
-          return (
-            <TextAreaInput
-              value={value}
-              onChange={onChange}
-              placeholder={`Enter ${fieldKey}...`}
-              error={error}
-              required={fieldSchema.required}
-            />
-          );
-        case 'email':
-          return (
-            <input
-              type="email"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              required={fieldSchema.required}
-              className={`w-full px-3 py-2 bg-black/40 border rounded-sm text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm backdrop-blur-sm ${
-                error ? 'border-red-400 ring-red-400/20' : 'border-white/10'
-              }`}
-            />
-          );
-        case 'password':
-          return (
-            <input
-              type="password"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              required={fieldSchema.required}
-              className={`w-full px-3 py-2 bg-black/40 border rounded-sm text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm backdrop-blur-sm ${
-                error ? 'border-red-400 ring-red-400/20' : 'border-white/10'
-              }`}
-            />
-          );
-        default:
-          return (
-            <TextInput
-              value={value}
-              onChange={onChange}
-              placeholder={`Enter ${fieldKey}...`}
-              error={error}
-              required={fieldSchema.required}
-            />
-          );
-      }
-    }
-
-    // Fallback to automatic type detection
-    if (typeof value === 'boolean') {
-      return (
-        <CheckboxInput
-          value={value}
-          onChange={onChange}
-          label={value ? 'Enabled' : 'Disabled'}
-        />
-      );
-    }
-    
-    if (typeof value === 'number') {
-      return (
-        <NumberInput
-          value={value}
-          onChange={onChange}
-          error={error}
-        />
-      );
-    }
-    
-    if (typeof value === 'object' && value !== null) {
-      return (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center space-x-2 text-sm text-white/60 hover:text-cyan-400 transition-colors"
-          >
-            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-            <span>{isExpanded ? 'Collapse' : 'Expand'} object</span>
-          </button>
-          {isExpanded && (
-            <pre className="text-xs text-white/70 bg-black/40 p-2 rounded border border-white/10">
-              {JSON.stringify(value, null, 2)}
-            </pre>
-          )}
-        </div>
-      );
-    }
-    
-    if (typeof value === 'string' && value.length > 50) {
-      return (
-        <TextAreaInput
-          value={value}
-          onChange={onChange}
-          placeholder={`Enter ${fieldKey}...`}
-          error={error}
-        />
-      );
-    }
-    
-    return (
-      <TextInput
-        value={value}
-        onChange={onChange}
-        placeholder={`Enter ${fieldKey}...`}
-        error={error}
-      />
-    );
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-white/80 capitalize">
-          {fieldKey.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}
-          {fieldSchema?.required && <span className="text-red-400 ml-1">*</span>}
-        </label>
-        {onDelete && (
-          <button
-            onClick={onDelete}
-            className="p-1 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-sm transition-all"
-            title="Delete field"
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
-        )}
-      </div>
-      {renderInput()}
-    </div>
-  );
-};
-
-// Main Enhanced Properties Panel
-export const CompatiblePropertiesPanel: React.FC = () => {
-  const { selectedNodeId, enhancedNodes, updateNodeConfiguration, updateNodeData } = useCompatibleWorkflow();
+export const PropertiesPanel: React.FC = () => {
+  const { 
+    selectedNode, 
+    selectedNodeId,
+    enhancedNodes,
+    updateNodeConfiguration, 
+    updateNodeData 
+  } = useWorkflow();
+  
   const [localConfiguration, setLocalConfiguration] = useState<Record<string, any>>({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
 
-  const selectedNode = selectedNodeId ? enhancedNodes.find(n => n.id === selectedNodeId) : null;
+  const debugInfo = {
+    selectedNodeId,
+    selectedNodeExists: !!selectedNode,
+    selectedNodeLabel: selectedNode?.data?.label || 'N/A',
+    enhancedNodesCount: enhancedNodes.length,
+    configKeys: Object.keys(localConfiguration),
+    hasUnsavedChanges,
+    lastSyncTime: lastSyncTime?.toLocaleTimeString() || 'Never'
+  };
 
-  // Sync local configuration with selected node
+  console.log('PropertiesPanel render:', debugInfo);
+
   useEffect(() => {
+    console.log('Syncing configuration effect triggered:', {
+      selectedNodeId,
+      selectedNode: selectedNode ? {
+        id: selectedNode.id,
+        label: selectedNode.data.label,
+        configKeys: Object.keys(selectedNode.data.configuration || {})
+      } : null
+    });
+
     if (selectedNode) {
-      setLocalConfiguration({ ...selectedNode.data.configuration });
+      const config = selectedNode.data.configuration || {};
+      console.log('Setting local configuration:', config);
+      setLocalConfiguration({ ...config });
+      setHasUnsavedChanges(false);
+      setLastSyncTime(new Date());
+    } else {
+      console.log('Clearing local configuration - no selected node');
+      setLocalConfiguration({});
       setHasUnsavedChanges(false);
     }
-  }, [selectedNode]);
+  }, [selectedNode, selectedNodeId]);
 
-  // Configuration change handler
   const handleConfigurationChange = (key: string, value: any) => {
+    console.log('Configuration change:', { key, value, nodeId: selectedNodeId });
     const newConfig = { ...localConfiguration, [key]: value };
     setLocalConfiguration(newConfig);
     setHasUnsavedChanges(true);
   };
 
-  // Save configuration
   const handleSave = () => {
-    if (!selectedNode) return;
+    if (!selectedNode) {
+      console.warn('Cannot save - no selected node');
+      return;
+    }
+    console.log('Saving configuration for node:', selectedNode.id, localConfiguration);
     updateNodeConfiguration(selectedNode.id, localConfiguration);
     setHasUnsavedChanges(false);
+    setLastSyncTime(new Date());
   };
 
-  // Reset configuration
+
   const handleReset = () => {
     if (selectedNode) {
-      setLocalConfiguration({ ...selectedNode.data.configuration });
+      console.log('Resetting configuration for node:', selectedNode.id);
+      const config = selectedNode.data.configuration || {};
+      setLocalConfiguration({ ...config });
       setHasUnsavedChanges(false);
     }
   };
 
+  const handleAddField = () => {
+    const fieldName = prompt('Enter field name:');
+    if (fieldName && !localConfiguration.hasOwnProperty(fieldName)) {
+      handleConfigurationChange(fieldName, '');
+    }
+  };
+
+  const handleDeleteField = (key: string) => {
+    const newConfig = { ...localConfiguration };
+    delete newConfig[key];
+    setLocalConfiguration(newConfig);
+    setHasUnsavedChanges(true);
+  };
+
   if (!selectedNode) {
     return (
-      <div className="w-80 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex items-center justify-center">
-        <div className="text-center text-white/40">
-          <div className="text-6xl mb-4">⚙️</div>
-          <p className="text-sm">Select a node to edit its properties</p>
+      <div className="w-80 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center text-white/40 p-6">
+            <div className="text-6xl mb-4">⚙️</div>
+            <h3 className="text-lg font-semibold mb-2">No Node Selected</h3>
+            <p className="text-sm mb-4">Click on a node in the canvas to edit its properties</p>
+            
+            <div className="mt-6 p-3 bg-white/5 rounded text-xs text-left">
+              <div className="font-semibold mb-2 flex items-center">
+                <Bug className="w-3 h-3 mr-1" />
+                Debug Info
+              </div>
+              <div>Available nodes: {enhancedNodes.length}</div>
+              <div>Selected ID: {selectedNodeId || 'none'}</div>
+              <div>Node IDs: {enhancedNodes.map((n: any) => n.id).join(', ') || 'none'}</div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -400,10 +213,10 @@ export const CompatiblePropertiesPanel: React.FC = () => {
       <div className="w-12 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex flex-col items-center justify-center">
         <button
           onClick={() => setIsCollapsed(false)}
-          className="p-2 text-white/40 hover:text-white"
+          className="p-2 text-white/40 hover:text-white transition-colors"
           title="Expand panel"
         >
-          ▶️
+          <Settings className="w-5 h-5" />
         </button>
         {hasUnsavedChanges && (
           <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse mt-2" />
@@ -414,7 +227,6 @@ export const CompatiblePropertiesPanel: React.FC = () => {
 
   return (
     <div className="w-80 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex flex-col">
-      {/* Header */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -431,17 +243,39 @@ export const CompatiblePropertiesPanel: React.FC = () => {
               <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" title="Unsaved changes" />
             )}
             <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="p-2 text-white/40 hover:text-white transition-colors"
+              title="Toggle debug info"
+            >
+              <Bug className="w-4 h-4" />
+            </button>
+            <button
               onClick={() => setIsCollapsed(true)}
-              className="p-2 text-white/40 hover:text-white"
+              className="p-2 text-white/40 hover:text-white transition-colors"
               title="Collapse panel"
             >
               ◀️
             </button>
           </div>
         </div>
+
+
+        {showDebug && (
+          <div className="p-3 bg-white/5 rounded text-xs">
+            <div className="font-semibold mb-2 text-cyan-400">Debug Information</div>
+            <div className="space-y-1 text-white/70">
+              <div>Node ID: {debugInfo.selectedNodeId}</div>
+              <div>Node Exists: {debugInfo.selectedNodeExists ? 'Yes' : 'No'}</div>
+              <div>Node Label: {debugInfo.selectedNodeLabel}</div>
+              <div>Config Keys: {debugInfo.configKeys.join(', ') || 'none'}</div>
+              <div>Unsaved: {debugInfo.hasUnsavedChanges ? 'Yes' : 'No'}</div>
+              <div>Last Sync: {debugInfo.lastSyncTime}</div>
+              <div>Total Nodes: {debugInfo.enhancedNodesCount}</div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Node Info */}
       <div className="p-6 border-b border-white/10">
         <div className="space-y-4">
           <div>
@@ -466,73 +300,83 @@ export const CompatiblePropertiesPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Configuration */}
       <div className="flex-1 overflow-y-auto p-6">
-        <h4 className="font-medium text-white mb-4">Configuration</h4>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-medium text-white">Configuration</h4>
+          <button
+            onClick={handleAddField}
+            className="p-1 text-white/40 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-all"
+            title="Add field"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
         
         <div className="space-y-4">
-          {Object.entries(localConfiguration).map(([key, value]) => (
-            <div key={key} className="space-y-2">
-              <label className="block text-sm font-medium text-white/80 capitalize">
-                {key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}
-              </label>
-              {typeof value === 'boolean' ? (
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={value}
-                    onChange={(e) => handleConfigurationChange(key, e.target.checked)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-sm text-white/70">{value ? 'Enabled' : 'Disabled'}</span>
-                </label>
-              ) : typeof value === 'number' ? (
-                <input
-                  type="number"
-                  value={value}
-                  onChange={(e) => handleConfigurationChange(key, Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded text-white focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm"
-                />
-              ) : (
-                <input
-                  type="text"
-                  value={String(value)}
-                  onChange={(e) => handleConfigurationChange(key, e.target.value)}
-                  placeholder={`Enter ${key}...`}
-                  className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm"
-                />
-              )}
+          {Object.entries(localConfiguration).length === 0 ? (
+            <div className="text-center py-8 text-white/40">
+              <Settings className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No configuration fields</p>
+              <button
+                onClick={handleAddField}
+                className="mt-2 text-cyan-400 hover:text-cyan-300 text-xs"
+              >
+                Add your first field
+              </button>
             </div>
-          ))}
-
-          {/* Add new field */}
-          <button
-            onClick={() => {
-              const fieldName = prompt('Enter field name:');
-              if (fieldName && !localConfiguration.hasOwnProperty(fieldName)) {
-                handleConfigurationChange(fieldName, '');
-              }
-            }}
-            className="w-full p-3 border-2 border-dashed border-white/20 rounded text-white/60 hover:text-cyan-400 hover:border-cyan-400/50 transition-all text-sm"
-          >
-            + Add Configuration Field
-          </button>
+          ) : (
+            Object.entries(localConfiguration).map(([key, value]) => (
+              <div key={key} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-white/80 capitalize">
+                    {key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}
+                  </label>
+                  <button
+                    onClick={() => handleDeleteField(key)}
+                    className="p-1 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-sm transition-all"
+                    title="Delete field"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+                
+                {typeof value === 'boolean' ? (
+                  <CheckboxInput
+                    value={value}
+                    onChange={(newValue) => handleConfigurationChange(key, newValue)}
+                    label={value ? 'Enabled' : 'Disabled'}
+                  />
+                ) : typeof value === 'number' ? (
+                  <NumberInput
+                    value={value}
+                    onChange={(newValue) => handleConfigurationChange(key, newValue)}
+                  />
+                ) : (
+                  <TextInput
+                    value={String(value)}
+                    onChange={(newValue) => handleConfigurationChange(key, newValue)}
+                    placeholder={`Enter ${key}...`}
+                  />
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {/* Actions */}
       <div className="p-6 border-t border-white/10">
         <div className="flex items-center space-x-3">
           <button
             onClick={handleSave}
             disabled={!hasUnsavedChanges}
-            className={`flex-1 py-3 px-4 rounded text-sm font-medium transition-all ${
+            className={`flex-1 py-3 px-4 rounded text-sm font-medium transition-all flex items-center justify-center space-x-2 ${
               hasUnsavedChanges
                 ? 'bg-white text-black hover:bg-white/90'
                 : 'bg-white/10 text-white/40 cursor-not-allowed'
             }`}
           >
-            Save Changes
+            <Save className="w-4 h-4" />
+            <span>Save Changes</span>
           </button>
           
           <button
@@ -543,16 +387,23 @@ export const CompatiblePropertiesPanel: React.FC = () => {
                 ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
                 : 'bg-white/5 text-white/30 cursor-not-allowed'
             }`}
+            title="Reset to saved"
           >
-            Reset
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
 
         <div className="mt-3 text-xs text-center">
           {hasUnsavedChanges ? (
-            <span className="text-cyan-400">● Unsaved changes</span>
+            <span className="text-cyan-400 flex items-center justify-center space-x-1">
+              <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse" />
+              <span>Unsaved changes</span>
+            </span>
           ) : (
-            <span className="text-white/40">✓ All changes saved</span>
+            <span className="text-white/40 flex items-center justify-center space-x-1">
+              <div className="w-1 h-1 bg-green-400 rounded-full" />
+              <span>All changes saved</span>
+            </span>
           )}
         </div>
       </div>

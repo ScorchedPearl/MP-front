@@ -1,3 +1,5 @@
+// Fixed version of canvas drop zone with proper selection tracking
+// src/app/testing/_components/drop-zone.tsx
 
 import React, { useCallback, useRef } from 'react';
 import {
@@ -9,6 +11,7 @@ import {
   BackgroundVariant,
   ReactFlowProvider,
   SelectionMode,
+  OnSelectionChangeParams,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from '@/lib/mockdata';
@@ -22,10 +25,32 @@ const nodeTypes = {
 };
 
 const WorkflowCanvas = () => {
-  const { useProject, nodes, setNodes, onEdgesChange, onNodesChange, edges, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition, onConnect, onNodesDelete } = useDragContext();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const project =  useProject()
+  const { 
+    useProject, 
+    nodes, 
+    setNodes, 
+    onEdgesChange, 
+    onNodesChange, 
+    edges, 
+    nodeIdCounter, 
+    setNodeIdCounter, 
+    isDragOver, 
+    setIsDragOver, 
+    dropPosition, 
+    setDropPosition, 
+    onConnect, 
+    onNodesDelete,
+    onSelectionChange , // Added this
+    setSelectedNodes,
+  } = useDragContext();
+  
+  const project = useProject()
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
+  console.log('WorkflowCanvas render:', {
+    nodesCount: nodes?.length || 0,
+    onSelectionChange: !!onSelectionChange
+  });
 
   const screenToFlowPosition = useCallback(
     ({ x, y }: { x: number; y: number }) => {
@@ -110,6 +135,8 @@ const WorkflowCanvas = () => {
           },
         };
 
+        console.log('Adding new node:', newNode);
+
         if (setNodes) {
           setNodes([...(nodes ?? []), newNode]);
         }
@@ -122,7 +149,20 @@ const WorkflowCanvas = () => {
     },
     [screenToFlowPosition, nodeIdCounter, setNodes, nodes, setNodeIdCounter, setIsDragOver, setDropPosition]
   );
-
+const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
+  console.log('🔥 ReactFlow Selection changed:', params);
+  console.log('🔥 Selected node IDs:', params.nodes.map(n => n.id));
+  
+  // Make sure to call the drag context's onSelectionChange
+  if (onSelectionChange) {
+    onSelectionChange(params);
+  }
+  
+  // Also update the selectedNodes directly
+  if (setSelectedNodes) {
+    setSelectedNodes(params.nodes as Node<WorkflowNodeData>[]);
+  }
+}, [onSelectionChange, setSelectedNodes]);
   return (
     <div className="h-screen w-full relative bg-black">
       <div 
@@ -139,6 +179,7 @@ const WorkflowCanvas = () => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodesDelete={onNodesDelete}
+          onSelectionChange={handleSelectionChange}  
           nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-right"
@@ -240,7 +281,7 @@ const WorkflowCanvas = () => {
           <div className="text-white/70 space-y-2 text-sm">
             <div className="flex items-center space-x-2">
               <span className="text-white/50">•</span>
-              <span>Click nodes to expand/minimize</span>
+              <span>Click nodes to select and edit properties</span>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-white/50">•</span>

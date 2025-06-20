@@ -4,10 +4,9 @@ import { FloatingAddButton } from './_components/addButton';
 import { useDragContext } from '@/provider/dragprovider';
 import NodePalettePanel from './_components/nonCollapsiblePannel';
 
-const FixedCollapsibleNodePalette: React.FC = () => {
+const NodePalette: React.FC = () => {
   const { togglePalette, isPaletteOpen, setIsPaletteOpen } = useDragContext();
 
-  // Debug logging to see what's happening
   console.log('Node Palette State:', {
     isPaletteOpen,
     togglePalette: !!togglePalette,
@@ -44,4 +43,4 @@ const FixedCollapsibleNodePalette: React.FC = () => {
   );
 };
 
-export default FixedCollapsibleNodePalette;
+export default NodePalette;
