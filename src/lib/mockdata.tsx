@@ -11,6 +11,7 @@ export interface NodeOutput {
   type: string;
 }
 export interface WorkflowNodeData {
+  id: string;
   [key: string]: unknown;
   label: string;
   nodeType: string;
@@ -22,6 +23,7 @@ export interface WorkflowNodeData {
 }
 
 export interface NodeTemplate {
+  id: string;
   type: string;
   label: string;
   description: string;
@@ -33,6 +35,7 @@ export interface NodeTemplate {
 }
 export const nodeTemplates: NodeTemplate[] = [
   {
+    id: '1',
     type: 'trigger',
     label: 'Webhook',
     description: 'Trigger workflow via HTTP webhook',
@@ -43,6 +46,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Data', type: 'object' }]
   },
   {
+    id: '2',
     type: 'action',
     label: 'Send Email',
     description: 'Send email notification',
@@ -53,6 +57,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Result', type: 'object' }]
   },
   {
+    id: '3',
     type: 'condition',
     label: 'Filter',
     description: 'Filter data based on conditions',
@@ -66,6 +71,7 @@ export const nodeTemplates: NodeTemplate[] = [
     ]
   },
   {
+    id: '4',
     type: 'transform',
     label: 'Transform',
     description: 'Transform and map data',
@@ -76,6 +82,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Transformed', type: 'object' }]
   },
   {
+    id: '5',
     type: 'delay',
     label: 'Delay',
     description: 'Add delay to workflow',

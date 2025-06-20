@@ -1,30 +1,23 @@
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+"use client";
 import EnhancedSidebar from "./sidebar"
+import { DragProvider } from "@/provider/dragprovider";
+import CanvasDropZone from "../testing/_components/drop-zone";
+import CollapsibleNodePalette from "../testing/_components/node-pallete";
+import PropertiesPanel from "../testing/_components/properties";
 export default function Page() {
  return (
   <div className="flex min-h-screen bg-background">
    <EnhancedSidebar />
     <div className="flex-1 flex flex-col">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-4 w-4" />
-          </Button>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">Workflows</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Dashboard</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </header>
 
-        <main className="flex-1 p-4">
+        <main className="flex-1 h-screen p-4">
+          <DragProvider>
+  <div className="overflow-hidden  bg-background flex">
+   <CanvasDropZone></CanvasDropZone>
+  <CollapsibleNodePalette></CollapsibleNodePalette>
+  <PropertiesPanel></PropertiesPanel>
+  </div>
+  </DragProvider>
         </main>
         </div>
   </div>

@@ -1,5 +1,5 @@
 
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   ReactFlow,
   Node,
@@ -22,15 +22,9 @@ const nodeTypes = {
 };
 
 const WorkflowCanvas = () => {
-  const { getProjector, nodes, setNodes, onEdgesChange, onNodesChange, edges, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition, onConnect, onNodesDelete } = useDragContext();
+  const { useProject, nodes, setNodes, onEdgesChange, onNodesChange, edges, nodeIdCounter, setNodeIdCounter, isDragOver, setIsDragOver, dropPosition, setDropPosition, onConnect, onNodesDelete } = useDragContext();
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const project = useMemo(() => {
-    if (typeof getProjector === 'function') {
-      return getProjector();
-    }
-    return (pos: { x: number; y: number }) => pos;
-  }, [getProjector]);
-
+  const project =  useProject()
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   const screenToFlowPosition = useCallback(
@@ -105,6 +99,7 @@ const WorkflowCanvas = () => {
           type: 'workflowNode',
           position,
           data: {
+            id: `node-${nodeIdCounter}`,
             label: foundTemplate.label,
             nodeType: foundTemplate.type,
             icon: foundTemplate.icon,
@@ -129,7 +124,7 @@ const WorkflowCanvas = () => {
   );
 
   return (
-    <div className="h-screen w-full relative bg-gray-950">
+    <div className="h-screen w-full relative bg-black">
       <div 
         className="w-full h-full" 
         ref={reactFlowWrapper}
@@ -161,37 +156,37 @@ const WorkflowCanvas = () => {
           selectionMode={SelectionMode.Partial}
         >
           <Background 
-            color="#374151" 
+            color="#1f2937" 
             gap={20} 
             size={1}
             variant={BackgroundVariant.Dots}
           />
           <Controls 
             showInteractive={false}
-            className="bg-gray-900/95 backdrop-blur border border-gray-700 rounded-xl shadow-xl [&>button]:bg-gray-800 [&>button]:border-gray-600 [&>button]:text-gray-300 [&>button:hover]:bg-gray-700 [&>button:hover]:text-white [&>button:hover]:border-gray-500"
+            showZoom={false}
+            className="bg-black/80 backdrop-blur-xl border border-white/10 shadow-xl [&>button]:bg-black/60 [&>button]:border-white/10 [&>button]:text-white/60 [&>button:hover]:bg-black/80 [&>button:hover]:text-white [&>button:hover]:border-cyan-400/50"
           />
           <MiniMap
             nodeStrokeWidth={3}
             zoomable
             pannable
-            className="bg-gray-900/95 backdrop-blur border border-gray-700 rounded-xl shadow-xl"
+            className="bg-black/80 backdrop-blur-xl border border-white/10 shadow-xl"
             style={{
-              backgroundColor: '#111827',
+              backgroundColor: '#000000',
             }}
           />
         </ReactFlow>
         
- 
         {isDragOver && (
-          <div className="absolute inset-0 bg-cyan-500/10 border-4 border-dashed border-cyan-400 rounded-2xl pointer-events-none z-10">
+          <div className="absolute inset-0 bg-cyan-400/10 border-4 border-dashed border-cyan-400 pointer-events-none z-10">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-gray-900/95 backdrop-blur border border-cyan-400 px-8 py-4 rounded-2xl shadow-2xl">
+              <div className="bg-black/90 backdrop-blur-xl border border-cyan-400/50 px-8 py-4 shadow-2xl">
                 <div className="text-cyan-400 font-semibold text-lg">Drop node here to add to workflow</div>
               </div>
             </div>
             {dropPosition && (
               <div 
-                className="absolute w-6 h-6 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/50"
+                className="absolute w-6 h-6 bg-cyan-400 animate-pulse shadow-lg shadow-cyan-400/50"
                 style={{
                   left: dropPosition.x - 12,
                   top: dropPosition.y - 12,
@@ -206,10 +201,10 @@ const WorkflowCanvas = () => {
             <div className="text-center space-y-6">
               <div className="text-8xl opacity-20">🎯</div>
               <div className="space-y-2">
-                <div className="text-2xl font-semibold text-gray-300">
+                <div className="text-2xl font-semibold text-white">
                   Start Building Your Workflow
                 </div>
-                <div className="text-gray-500 max-w-md mx-auto leading-relaxed">
+                <div className="text-white/60 max-w-md mx-auto leading-relaxed">
                   Add nodes from the palette to create powerful automated workflows. 
                   Connect them together to build complex logic flows.
                 </div>
@@ -219,44 +214,44 @@ const WorkflowCanvas = () => {
         )}
       </div>
 
-      <div className="absolute bottom-6 left-6 bg-gray-900/95 backdrop-blur border border-gray-700 px-6 py-4 rounded-xl shadow-xl">
+      <div className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-4 shadow-xl">
         <div className="flex items-center space-x-6 text-sm">
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-cyan-400 rounded-full" />
-            <span className="text-gray-300">
+            <div className="w-2 h-2 bg-cyan-400" />
+            <span className="text-white/70">
               <span className="font-semibold text-white">{nodes?.length || 0}</span> nodes
             </span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-            <span className="text-gray-300">
+            <div className="w-2 h-2 bg-white" />
+            <span className="text-white/70">
               <span className="font-semibold text-white">{edges?.length || 0}</span> connections
             </span>
           </div>
         </div>
       </div>
 
-      <div className="absolute top-6 right-6 bg-gray-900/95 backdrop-blur border border-gray-700 p-4 rounded-xl shadow-xl max-w-sm">
+      <div className="absolute top-6 right-6 bg-black/80 backdrop-blur-xl border border-white/10 p-4 shadow-xl max-w-sm">
         <div className="space-y-3">
           <div className="font-semibold text-white flex items-center space-x-2">
-            <div className="w-2 h-2 bg-cyan-400 rounded-full" />
+            <div className="w-2 h-2 bg-cyan-400" />
             <span>Workflow Controls</span>
           </div>
-          <div className="text-gray-300 space-y-2 text-sm">
+          <div className="text-white/70 space-y-2 text-sm">
             <div className="flex items-center space-x-2">
-              <span className="text-gray-500">•</span>
+              <span className="text-white/50">•</span>
               <span>Click nodes to expand/minimize</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-gray-500">•</span>
+              <span className="text-white/50">•</span>
               <span>Drag from handles to connect</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-gray-500">•</span>
+              <span className="text-white/50">•</span>
               <span>Delete key to remove selected</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-gray-500">•</span>
+              <span className="text-white/50">•</span>
               <span>Cmd/Ctrl + click for multi-select</span>
             </div>
           </div>
