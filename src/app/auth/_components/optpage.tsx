@@ -33,9 +33,15 @@ const handleResendOTP = () => {
  console.log(localStorage.getItem('currentOtp'));
 };
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-b from-black via-orange-950/25 to-black">
+    <div className="flex justify-center items-center h-screen bg-black">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      </div>
+
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000" />
       <div className="w-96 bg-black/50 backdrop-blur-xl border border-white/10 shadow-xl rounded-lg p-8">
-        <h1 className="text-2xl font-bold text-center bg-gradient-to-r from-orange-400 via-yellow-300 to-yellow-500 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold text-center bg-gradient-to-br from-cyan-500/100 to-cyan-500/50 bg-clip-text text-transparent">
           Enter OTP
         </h1>
         <p className="text-sm text-gray-300 text-center mb-4">
@@ -67,7 +73,7 @@ const handleResendOTP = () => {
             handleOTPComplete(otp)
             }}
             disabled={isSubmitting}
-            className="bg-gradient-to-r from-orange-400 via-yellow-400 to-yellow-500 text-black font-semibold hover:opacity-90 transition-opacity rounded-lg py-2 px-4"
+            className="bg-gradient-to-r from-cyan-500/100 to-cyan-500/50 text-slate-300 font-semibold hover:opacity-90 transition-opacity rounded-lg py-2 px-4"
           >
             {isSubmitting ? "Verifying..." : "Verify OTP"}
           </Button>

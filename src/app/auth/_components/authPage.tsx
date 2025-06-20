@@ -7,8 +7,8 @@ import { useGoogleLogin, TokenResponse } from "@react-oauth/google";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserIcon, MailIcon, LockIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { set, useForm } from "react-hook-form";
 import OTPEntryPage from "./optpage";
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -105,7 +105,7 @@ export default function AuthPage() {
     onError: () => console.log("Login Failed"),
     scope: "openid profile email",
   });
-  
+
  return isOtpPage ? (
      <div>
        <OTPEntryPage generateOTP={generateOTP} />
