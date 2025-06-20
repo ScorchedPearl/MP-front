@@ -60,7 +60,6 @@ export function ResizableSidebar({
       >
         {children}
 
-        {/* Resize Handle */}
         <div
           className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-transparent hover:bg-cyan-500/10 transition-colors group"
           onMouseDown={startResizing}

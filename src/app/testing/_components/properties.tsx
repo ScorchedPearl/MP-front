@@ -117,33 +117,20 @@ export const PropertiesPanel: React.FC = () => {
     lastSyncTime: lastSyncTime?.toLocaleTimeString() || 'Never'
   };
 
-  console.log('PropertiesPanel render:', debugInfo);
 
   useEffect(() => {
-    console.log('Syncing configuration effect triggered:', {
-      selectedNodeId,
-      selectedNode: selectedNode ? {
-        id: selectedNode.id,
-        label: selectedNode.data.label,
-        configKeys: Object.keys(selectedNode.data.configuration || {})
-      } : null
-    });
-
     if (selectedNode) {
       const config = selectedNode.data.configuration || {};
-      console.log('Setting local configuration:', config);
       setLocalConfiguration({ ...config });
       setHasUnsavedChanges(false);
       setLastSyncTime(new Date());
     } else {
-      console.log('Clearing local configuration - no selected node');
       setLocalConfiguration({});
       setHasUnsavedChanges(false);
     }
   }, [selectedNode, selectedNodeId]);
 
   const handleConfigurationChange = (key: string, value: any) => {
-    console.log('Configuration change:', { key, value, nodeId: selectedNodeId });
     const newConfig = { ...localConfiguration, [key]: value };
     setLocalConfiguration(newConfig);
     setHasUnsavedChanges(true);
@@ -154,7 +141,6 @@ export const PropertiesPanel: React.FC = () => {
       console.warn('Cannot save - no selected node');
       return;
     }
-    console.log('Saving configuration for node:', selectedNode.id, localConfiguration);
     updateNodeConfiguration(selectedNode.id, localConfiguration);
     setHasUnsavedChanges(false);
     setLastSyncTime(new Date());
@@ -163,7 +149,6 @@ export const PropertiesPanel: React.FC = () => {
 
   const handleReset = () => {
     if (selectedNode) {
-      console.log('Resetting configuration for node:', selectedNode.id);
       const config = selectedNode.data.configuration || {};
       setLocalConfiguration({ ...config });
       setHasUnsavedChanges(false);

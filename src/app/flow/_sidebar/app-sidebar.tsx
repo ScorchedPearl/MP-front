@@ -19,12 +19,11 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
-import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
-import { TeamSwitcher } from "./team-switcher"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Link from "next/link"
 
 // This is sample data.
 const data = {
@@ -50,6 +49,7 @@ const data = {
       plan: "Pro",
     },
   ],
+  // Fetch this data from your API or state management  (Context, etc.) SidebarContext
   navMain: [
     {
       title: "Dashboard",
@@ -71,15 +71,7 @@ const data = {
           title: "Draft Workflows",
           url: "#",
           badge: "3",
-        },
-        {
-          title: "Templates",
-          url: "#",
-        },
-        {
-          title: "Shared Workflows",
-          url: "#",
-        },
+        }
       ],
     },
     {
@@ -102,90 +94,24 @@ const data = {
         },
       ],
     },
-    {
-      title: "Data",
-      url: "#",
-      icon: Database,
-      items: [
-        {
-          title: "Variables",
-          url: "#",
-        },
-        {
-          title: "Credentials",
-          url: "#",
-        },
-        {
-          title: "Environments",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: Users,
-      items: [
-        {
-          title: "Members",
-          url: "#",
-        },
-        {
-          title: "Permissions",
-          url: "#",
-        },
-        {
-          title: "Audit Log",
-          url: "#",
-        },
-      ],
-    },
+    
   ],
-  projects: [
-    {
-      name: "E-commerce Integration",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Customer Support Bot",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Data Sync Pipeline",
-      url: "#",
-      icon: Map,
-    },
-  ],
+ 
 }
 
 export function AppSidebar() {
   return (
   <div className=" relative flex flex-col h-full bg-gray-950 text-gray-200 ">
- 
-      {/* Content Overlay */}
       <div className="relative flex flex-col h-full">
-        {/* Header */}
         <div className="p-4 border-b border-gray-700 backdrop-blur-sm bg-gray-900/50">
-          <TeamSwitcher teams={data.teams} />
-          <div className="mt-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search workflows..."
-                className="pl-8 bg-gray-800 placeholder-gray-500 text-gray-200"
-              />
-            </div>
-          </div>
+{/* Icon */}
         </div>
 
         {/* Scrollable Content */}
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-4">
             <NavMain items={data.navMain}  />
-            <NavProjects projects={data.projects} />
-
+           
             <div className="space-y-1">
               <div className="px-3 py-2">
                 <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-gray-100">
@@ -195,6 +121,7 @@ export function AppSidebar() {
                   variant="outline"
                   className="w-full justify-start border-gray-600 hover:bg-gray-700 text-gray-200"
                 >
+                   {/* MainButton */}
                   <Plus className="mr-2 h-4 w-4" />
                   New Workflow
                 </Button>
@@ -204,6 +131,7 @@ export function AppSidebar() {
             <div className="space-y-1">
               <div className="px-3 py-2">
                 <div className="space-y-1">
+                  <Link href="/contact">
                   <Button
                     variant="ghost"
                     className="w-full justify-start hover:bg-gray-700 text-gray-200"
@@ -214,6 +142,8 @@ export function AppSidebar() {
                       Help & Support
                     </a>
                   </Button>
+                  </Link>
+                  <Link href="/">
                   <Button
                     variant="ghost"
                     className="w-full justify-start hover:bg-gray-700 text-gray-200"
@@ -221,9 +151,10 @@ export function AppSidebar() {
                   >
                     <a href="#" className="flex items-center">
                       <Settings2 className="mr-2 h-4 w-4" />
-                      Settings
+                      Home
                     </a>
                   </Button>
+                  </Link>
                 </div>
               </div>
             </div>
