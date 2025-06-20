@@ -1,6 +1,3 @@
-// Fixed Properties Panel with proper state management
-// src/app/testing/_components/properties.tsx
-
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, 
@@ -8,11 +5,11 @@ import {
   Plus, 
   Trash2, 
   RotateCcw,
-  AlertCircle
+  AlertCircle,
+  Bug
 } from 'lucide-react';
-import { useCompatibleWorkflow } from '@/app/flow/_state/statecontext';
+import { useWorkflow } from '@/provider/statecontext';
 
-// Input Components with validation
 const TextInput: React.FC<{
   value: string;
   onChange: (value: string) => void;
@@ -94,86 +91,85 @@ const CheckboxInput: React.FC<{
   </label>
 );
 
-const TextAreaInput: React.FC<{
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  rows?: number;
-  error?: string;
-  required?: boolean;
-}> = ({ value, onChange, placeholder, rows = 3, error, required }) => (
-  <div className="space-y-1">
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      required={required}
-      className={`w-full px-3 py-2 bg-black/40 border rounded-sm text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm resize-none backdrop-blur-sm ${
-        error ? 'border-red-400 ring-red-400/20' : 'border-white/10'
-      }`}
-    />
-    {error && (
-      <div className="flex items-center space-x-1 text-red-400 text-xs">
-        <AlertCircle className="w-3 h-3" />
-        <span>{error}</span>
-      </div>
-    )}
-  </div>
-);
 
-// Main Properties Panel
-export const CompatiblePropertiesPanel: React.FC = () => {
-  const { selectedNode, updateNodeConfiguration, updateNodeData } = useCompatibleWorkflow();
+export const PropertiesPanel: React.FC = () => {
+  const { 
+    selectedNode, 
+    selectedNodeId,
+    enhancedNodes,
+    updateNodeConfiguration, 
+    updateNodeData 
+  } = useWorkflow();
+  
   const [localConfiguration, setLocalConfiguration] = useState<Record<string, any>>({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
 
-  // Debug logging
-  console.log('PropertiesPanel render:', {
-    selectedNode: selectedNode ? { id: selectedNode.id, label: selectedNode.data.label } : null,
+  const debugInfo = {
+    selectedNodeId,
+    selectedNodeExists: !!selectedNode,
+    selectedNodeLabel: selectedNode?.data?.label || 'N/A',
+    enhancedNodesCount: enhancedNodes.length,
+    configKeys: Object.keys(localConfiguration),
     hasUnsavedChanges,
-    localConfigKeys: Object.keys(localConfiguration)
-  });
+    lastSyncTime: lastSyncTime?.toLocaleTimeString() || 'Never'
+  };
 
-  // Sync local configuration with selected node
+  console.log('PropertiesPanel render:', debugInfo);
+
   useEffect(() => {
+    console.log('Syncing configuration effect triggered:', {
+      selectedNodeId,
+      selectedNode: selectedNode ? {
+        id: selectedNode.id,
+        label: selectedNode.data.label,
+        configKeys: Object.keys(selectedNode.data.configuration || {})
+      } : null
+    });
+
     if (selectedNode) {
-      console.log('Syncing configuration for node:', selectedNode.id, selectedNode.data.configuration);
-      setLocalConfiguration({ ...selectedNode.data.configuration });
+      const config = selectedNode.data.configuration || {};
+      console.log('Setting local configuration:', config);
+      setLocalConfiguration({ ...config });
       setHasUnsavedChanges(false);
+      setLastSyncTime(new Date());
     } else {
+      console.log('Clearing local configuration - no selected node');
       setLocalConfiguration({});
       setHasUnsavedChanges(false);
     }
-  }, [selectedNode]);
+  }, [selectedNode, selectedNodeId]);
 
-  // Configuration change handler
   const handleConfigurationChange = (key: string, value: any) => {
-    console.log('Configuration change:', { key, value });
+    console.log('Configuration change:', { key, value, nodeId: selectedNodeId });
     const newConfig = { ...localConfiguration, [key]: value };
     setLocalConfiguration(newConfig);
     setHasUnsavedChanges(true);
   };
 
-  // Save configuration
   const handleSave = () => {
-    if (!selectedNode) return;
+    if (!selectedNode) {
+      console.warn('Cannot save - no selected node');
+      return;
+    }
     console.log('Saving configuration for node:', selectedNode.id, localConfiguration);
     updateNodeConfiguration(selectedNode.id, localConfiguration);
     setHasUnsavedChanges(false);
+    setLastSyncTime(new Date());
   };
 
-  // Reset configuration
+
   const handleReset = () => {
     if (selectedNode) {
       console.log('Resetting configuration for node:', selectedNode.id);
-      setLocalConfiguration({ ...selectedNode.data.configuration });
+      const config = selectedNode.data.configuration || {};
+      setLocalConfiguration({ ...config });
       setHasUnsavedChanges(false);
     }
   };
 
-  // Add new configuration field
   const handleAddField = () => {
     const fieldName = prompt('Enter field name:');
     if (fieldName && !localConfiguration.hasOwnProperty(fieldName)) {
@@ -181,7 +177,6 @@ export const CompatiblePropertiesPanel: React.FC = () => {
     }
   };
 
-  // Delete configuration field
   const handleDeleteField = (key: string) => {
     const newConfig = { ...localConfiguration };
     delete newConfig[key];
@@ -191,11 +186,23 @@ export const CompatiblePropertiesPanel: React.FC = () => {
 
   if (!selectedNode) {
     return (
-      <div className="w-80 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex items-center justify-center">
-        <div className="text-center text-white/40 p-6">
-          <div className="text-6xl mb-4">⚙️</div>
-          <h3 className="text-lg font-semibold mb-2">No Node Selected</h3>
-          <p className="text-sm">Click on a node in the canvas to edit its properties</p>
+      <div className="w-80 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center text-white/40 p-6">
+            <div className="text-6xl mb-4">⚙️</div>
+            <h3 className="text-lg font-semibold mb-2">No Node Selected</h3>
+            <p className="text-sm mb-4">Click on a node in the canvas to edit its properties</p>
+            
+            <div className="mt-6 p-3 bg-white/5 rounded text-xs text-left">
+              <div className="font-semibold mb-2 flex items-center">
+                <Bug className="w-3 h-3 mr-1" />
+                Debug Info
+              </div>
+              <div>Available nodes: {enhancedNodes.length}</div>
+              <div>Selected ID: {selectedNodeId || 'none'}</div>
+              <div>Node IDs: {enhancedNodes.map((n: any) => n.id).join(', ') || 'none'}</div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -220,7 +227,6 @@ export const CompatiblePropertiesPanel: React.FC = () => {
 
   return (
     <div className="w-80 bg-black/80 backdrop-blur-xl border-l border-white/10 h-screen flex flex-col">
-      {/* Header */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -237,6 +243,13 @@ export const CompatiblePropertiesPanel: React.FC = () => {
               <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" title="Unsaved changes" />
             )}
             <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="p-2 text-white/40 hover:text-white transition-colors"
+              title="Toggle debug info"
+            >
+              <Bug className="w-4 h-4" />
+            </button>
+            <button
               onClick={() => setIsCollapsed(true)}
               className="p-2 text-white/40 hover:text-white transition-colors"
               title="Collapse panel"
@@ -245,9 +258,24 @@ export const CompatiblePropertiesPanel: React.FC = () => {
             </button>
           </div>
         </div>
+
+
+        {showDebug && (
+          <div className="p-3 bg-white/5 rounded text-xs">
+            <div className="font-semibold mb-2 text-cyan-400">Debug Information</div>
+            <div className="space-y-1 text-white/70">
+              <div>Node ID: {debugInfo.selectedNodeId}</div>
+              <div>Node Exists: {debugInfo.selectedNodeExists ? 'Yes' : 'No'}</div>
+              <div>Node Label: {debugInfo.selectedNodeLabel}</div>
+              <div>Config Keys: {debugInfo.configKeys.join(', ') || 'none'}</div>
+              <div>Unsaved: {debugInfo.hasUnsavedChanges ? 'Yes' : 'No'}</div>
+              <div>Last Sync: {debugInfo.lastSyncTime}</div>
+              <div>Total Nodes: {debugInfo.enhancedNodesCount}</div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Node Info */}
       <div className="p-6 border-b border-white/10">
         <div className="space-y-4">
           <div>
@@ -272,7 +300,6 @@ export const CompatiblePropertiesPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Configuration */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="font-medium text-white">Configuration</h4>
@@ -337,7 +364,6 @@ export const CompatiblePropertiesPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="p-6 border-t border-white/10">
         <div className="flex items-center space-x-3">
           <button

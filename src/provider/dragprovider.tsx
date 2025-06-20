@@ -1,6 +1,3 @@
-// Fixed version of the drag provider with proper node selection tracking
-// src/provider/dragprovider.tsx
-
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from "@/lib/mockdata";
 import { Edge, useNodesState, useStore, Node, useEdgesState, OnConnect, Connection, addEdge, OnSelectionChangeParams } from "@xyflow/react";
 import { useContext, createContext, useState, useMemo, useCallback } from "react";
@@ -16,9 +13,9 @@ const DragContext = createContext<{
   setClickedItem?: (item: NodeTemplate | null) => void;
   isPaletteOpen?: boolean;
   setIsPaletteOpen?: (isOpen: boolean) => void;
-  selectedNodes?: Node<WorkflowNodeData>[];  // Changed to actual flow nodes
+  selectedNodes?: Node<WorkflowNodeData>[];
   setSelectedNodes?: (nodes: Node<WorkflowNodeData>[]) => void;
-  selectedTemplateNodes?: NodeTemplate[];  // Separate for template selection
+  selectedTemplateNodes?: NodeTemplate[];
   setSelectedTemplateNodes?: (nodes: NodeTemplate[]) => void;
   handleDragStart?: (event: React.DragEvent, template: NodeTemplate) => void;
   handleClick?: (template: NodeTemplate) => void;
@@ -32,7 +29,7 @@ const DragContext = createContext<{
   setEdges?: (edges: Edge[]) => void;
   onNodesChange?: (changes: any) => void;
   onEdgesChange?: (changes: any) => void;
-  onSelectionChange?: (params: OnSelectionChangeParams) => void;  // Added
+  onSelectionChange?: (params: OnSelectionChangeParams) => void;
   nodeIdCounter?: number;
   setNodeIdCounter?: (count: number) => void; 
   isDragOver?: boolean;
@@ -42,6 +39,9 @@ const DragContext = createContext<{
   onConnect?: OnConnect;
   onNodesDelete?: (nodes: Node[]) => void;
   useProject: () => (pos: { x: number; y: number }) => { x: number; y: number };
+  // Add callback for external selection handling
+  onExternalSelectionChange?: (nodes: Node<WorkflowNodeData>[]) => void;
+  setOnExternalSelectionChange?: (callback: (nodes: Node<WorkflowNodeData>[]) => void) => void;
 }>({
   isDragging: false,
   setIsDragging: () => {},
@@ -79,16 +79,17 @@ const DragContext = createContext<{
   onConnect: () => {},
   onNodesDelete: () => {},
   useProject: () => (pos) => ({ x: pos.x, y: pos.y }),
+  onExternalSelectionChange: undefined,
+  setOnExternalSelectionChange: () => {},
 });
 
-export const FixedDragProvider = ({ children }: { children: React.ReactNode }) => {
+export const DragProvider = ({ children }: { children: React.ReactNode }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [draggedItem, setDraggedItem] = useState<NodeTemplate | null>(null);
   const [clickedItem, setClickedItem] = useState<NodeTemplate | null>(null);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-  
-  // Separate state for flow nodes vs template nodes
+
   const [selectedNodes, setSelectedNodes] = useState<Node<WorkflowNodeData>[]>([]);
   const [selectedTemplateNodes, setSelectedTemplateNodes] = useState<NodeTemplate[]>([]);
   
@@ -98,11 +99,16 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
   const [isDragOver, setIsDragOver] = useState(false);
   const [dropPosition, setDropPosition] = useState<{ x: number; y: number } | null>(null);
   
+  const [onExternalSelectionChange, setOnExternalSelectionChange] = useState<
+    ((nodes: Node<WorkflowNodeData>[]) => void) | undefined
+  >(undefined);
+  
   console.log('DragProvider state:', {
     selectedNodesCount: selectedNodes.length,
     selectedNodeIds: selectedNodes.map(n => n.id),
     nodesCount: nodes.length,
-    isPaletteOpen
+    isPaletteOpen,
+    hasExternalCallback: !!onExternalSelectionChange
   });
 
   function useProject() {
@@ -130,11 +136,17 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
       : nodeTemplates.filter((t: NodeTemplate) => t.category === selectedCategory);
   }, [selectedCategory]);
 
-  // Handle React Flow selection changes
   const onSelectionChange = useCallback((params: OnSelectionChangeParams) => {
-    console.log('Selection changed:', params);
-    setSelectedNodes(params.nodes as Node<WorkflowNodeData>[]);
-  }, []);
+    console.log('Selection changed in React Flow:', params);
+    const flowNodes = params.nodes as Node<WorkflowNodeData>[];
+    
+    setSelectedNodes(flowNodes);
+    
+    if (onExternalSelectionChange) {
+      console.log('Calling external selection callback with nodes:', flowNodes.map(n => n.id));
+      onExternalSelectionChange(flowNodes);
+    }
+  }, [onExternalSelectionChange]);
 
   const handleDragStart = (event: React.DragEvent, template: NodeTemplate) => {
     setDraggedItem(template);
@@ -185,9 +197,14 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
       !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)
     );
     setEdges(filteredEdges);
-    // Clear selection if deleted nodes were selected
-    setSelectedNodes(prev => prev.filter(node => !nodeIds.includes(node.id)));
-  }, [nodes, edges, setNodes, setEdges]);
+
+    const remainingSelected = selectedNodes.filter(node => !nodeIds.includes(node.id));
+    setSelectedNodes(remainingSelected);
+    
+    if (onExternalSelectionChange && remainingSelected.length !== selectedNodes.length) {
+      onExternalSelectionChange(remainingSelected);
+    }
+  }, [nodes, edges, setNodes, setEdges, selectedNodes, onExternalSelectionChange]);
 
   const contextValue = {
     isDragging,
@@ -226,6 +243,8 @@ export const FixedDragProvider = ({ children }: { children: React.ReactNode }) =
     setDropPosition,
     onConnect,
     onNodesDelete,
+    onExternalSelectionChange,
+    setOnExternalSelectionChange,
   };
 
   return (

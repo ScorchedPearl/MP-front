@@ -1,12 +1,8 @@
-// Fixed version of the state context
-// src/app/flow/_state/statecontext.tsx
-
 import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
-import { Node, Edge } from '@xyflow/react';
-import { WorkflowNodeData, NodeTemplate } from '@/lib/mockdata';
+import { Node } from '@xyflow/react';
+import { WorkflowNodeData} from '@/lib/mockdata';
 import { useDragContext } from '@/provider/dragprovider';
 
-// Enhanced node data structure
 export interface EnhancedWorkflowNodeData extends WorkflowNodeData {
   configuration: Record<string, any>;
   executionState?: 'idle' | 'running' | 'success' | 'error';
@@ -18,7 +14,6 @@ export interface EnhancedNode extends Node<EnhancedWorkflowNodeData> {
   data: EnhancedWorkflowNodeData;
 }
 
-// Workflow execution data structure
 export interface WorkflowExecutionData {
   nodes: Array<{
     id: string;
@@ -42,7 +37,7 @@ export interface WorkflowExecutionData {
   };
 }
 
-interface CompatibleWorkflowContextType {
+interface WorkflowContextType {
   enhancedNodes: EnhancedNode[];
   setEnhancedNodes: (nodes: EnhancedNode[]) => void;
   selectedNodeId: string | null;
@@ -60,10 +55,11 @@ interface CompatibleWorkflowContextType {
   updateWorkflowMetadata: (metadata: Partial<WorkflowExecutionData['metadata']>) => void;
 }
 
-const CompatibleWorkflowContext = createContext<CompatibleWorkflowContextType | null>(null);
+const WorkflowContext = createContext<WorkflowContextType | null>(null);
 
-export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { nodes, setNodes, edges, selectedNodes } = useDragContext();
+  
   const [enhancedNodes, setEnhancedNodes] = useState<EnhancedNode[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [workflowMetadata, setWorkflowMetadata] = useState<WorkflowExecutionData['metadata']>({
@@ -74,8 +70,7 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     lastModified: new Date(),
   });
 
-  // Debug logging
-  console.log('CompatibleWorkflowProvider state:', {
+  console.log('WorkflowProvider state:', {
     nodesCount: nodes?.length || 0,
     enhancedNodesCount: enhancedNodes.length,
     selectedNodesCount: selectedNodes?.length || 0,
@@ -83,9 +78,8 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     selectedNodeIds: selectedNodes?.map(n => n.id) || []
   });
 
-  // Sync with existing drag provider nodes
   useEffect(() => {
-    if (nodes && nodes.length > 0) {
+    if (nodes && nodes.length >= 0) {
       const enhanced = nodes.map(node => ({
         ...node,
         data: {
@@ -97,14 +91,11 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
       
       console.log('Syncing enhanced nodes:', enhanced.map(n => ({ id: n.id, label: n.data.label })));
       setEnhancedNodes(enhanced);
-    } else {
-      setEnhancedNodes([]);
     }
   }, [nodes]);
 
-  // Track selected node from React Flow
   useEffect(() => {
-    console.log('Selected nodes changed:', selectedNodes?.map(n => n.id) || []);
+    console.log('Selected nodes changed in workflow context:', selectedNodes?.map(n => n.id) || []);
     
     if (selectedNodes && selectedNodes.length === 1) {
       const selectedId = selectedNodes[0].id;
@@ -116,18 +107,15 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     }
   }, [selectedNodes]);
 
-  // Get the selected enhanced node
   const selectedNode = selectedNodeId 
     ? enhancedNodes.find(n => n.id === selectedNodeId) || null 
     : null;
 
   console.log('Selected node:', selectedNode ? { id: selectedNode.id, label: selectedNode.data.label } : 'none');
 
-  // Update node configuration
   const updateNodeConfiguration = useCallback((nodeId: string, configuration: Record<string, any>) => {
     console.log('Updating node configuration:', { nodeId, configuration });
     
-    // Update enhanced nodes
     setEnhancedNodes(prevNodes =>
       prevNodes.map(node =>
         node.id === nodeId
@@ -142,7 +130,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
       )
     );
 
-    // Also update original nodes if setNodes is available
     if (setNodes && nodes) {
       setNodes(
         nodes.map((node: any) =>
@@ -162,7 +149,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     setWorkflowMetadata(prev => ({ ...prev, lastModified: new Date() }));
   }, [setNodes, nodes]);
 
-  // Update any node data
   const updateNodeData = useCallback((nodeId: string, updates: Partial<EnhancedWorkflowNodeData>) => {
     console.log('Updating node data:', { nodeId, updates });
     
@@ -180,7 +166,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
       )
     );
 
-    // Also update original nodes for basic data
     if (setNodes && nodes) {
       setNodes(
         nodes.map((node: any) =>
@@ -200,7 +185,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     setWorkflowMetadata(prev => ({ ...prev, lastModified: new Date() }));
   }, [setNodes, nodes]);
 
-  // Get workflow data for backend
   const getWorkflowExecutionData = useCallback((): WorkflowExecutionData => {
     return {
       nodes: enhancedNodes.map(node => ({
@@ -241,7 +225,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     setWorkflowMetadata(data.metadata);
   }, []);
 
-  // Validate workflow
   const validateWorkflow = useCallback((): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
 
@@ -256,7 +239,6 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     };
   }, [enhancedNodes]);
 
-  // Update workflow metadata
   const updateWorkflowMetadata = useCallback((updates: Partial<WorkflowExecutionData['metadata']>) => {
     setWorkflowMetadata(prev => ({
       ...prev,
@@ -265,31 +247,31 @@ export const CompatibleWorkflowProvider: React.FC<{ children: React.ReactNode }>
     }));
   }, []);
 
-  const contextValue: CompatibleWorkflowContextType = {
-    enhancedNodes,
-    setEnhancedNodes,
-    selectedNodeId,
-    selectedNode,
-    updateNodeConfiguration,
-    updateNodeData,
-    getWorkflowExecutionData,
-    loadWorkflow,
-    validateWorkflow,
-    workflowMetadata,
-    updateWorkflowMetadata,
+  const contextValue: WorkflowContextType = {
+   enhancedNodes,
+   setEnhancedNodes,
+   selectedNodeId,
+   selectedNode,
+   updateNodeConfiguration,
+   updateNodeData,
+   getWorkflowExecutionData,
+   loadWorkflow,
+   validateWorkflow,
+   workflowMetadata,
+   updateWorkflowMetadata,
   };
 
   return (
-    <CompatibleWorkflowContext.Provider value={contextValue}>
+    <WorkflowContext.Provider value={contextValue}>
       {children}
-    </CompatibleWorkflowContext.Provider>
+    </WorkflowContext.Provider>
   );
 };
 
-export const useCompatibleWorkflow = (): CompatibleWorkflowContextType => {
-  const context = useContext(CompatibleWorkflowContext);
+export const useWorkflow = (): WorkflowContextType => {
+  const context = useContext(WorkflowContext);
   if (!context) {
-    throw new Error('useCompatibleWorkflow must be used within a CompatibleWorkflowProvider');
+    throw new Error('useWorkflow must be used within a WorkflowProvider');
   }
   return context;
 };

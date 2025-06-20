@@ -11,6 +11,7 @@ import {
   BackgroundVariant,
   ReactFlowProvider,
   SelectionMode,
+  OnSelectionChangeParams,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from '@/lib/mockdata';
@@ -39,7 +40,8 @@ const WorkflowCanvas = () => {
     setDropPosition, 
     onConnect, 
     onNodesDelete,
-    onSelectionChange  // Added this
+    onSelectionChange , // Added this
+    setSelectedNodes,
   } = useDragContext();
   
   const project = useProject()
@@ -147,7 +149,20 @@ const WorkflowCanvas = () => {
     },
     [screenToFlowPosition, nodeIdCounter, setNodes, nodes, setNodeIdCounter, setIsDragOver, setDropPosition]
   );
-
+const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
+  console.log('🔥 ReactFlow Selection changed:', params);
+  console.log('🔥 Selected node IDs:', params.nodes.map(n => n.id));
+  
+  // Make sure to call the drag context's onSelectionChange
+  if (onSelectionChange) {
+    onSelectionChange(params);
+  }
+  
+  // Also update the selectedNodes directly
+  if (setSelectedNodes) {
+    setSelectedNodes(params.nodes as Node<WorkflowNodeData>[]);
+  }
+}, [onSelectionChange, setSelectedNodes]);
   return (
     <div className="h-screen w-full relative bg-black">
       <div 
@@ -164,7 +179,7 @@ const WorkflowCanvas = () => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodesDelete={onNodesDelete}
-          onSelectionChange={onSelectionChange}  // Added this line
+          onSelectionChange={handleSelectionChange}  
           nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-right"
