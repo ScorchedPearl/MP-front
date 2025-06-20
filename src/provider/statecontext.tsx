@@ -92,6 +92,7 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       console.log('Syncing enhanced nodes:', enhanced.map(n => ({ id: n.id, label: n.data.label })));
       setEnhancedNodes(enhanced);
     }
+    getWorkflowExecutionData();
   }, [nodes]);
 
   useEffect(() => {
@@ -186,7 +187,7 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [setNodes, nodes]);
 
   const getWorkflowExecutionData = useCallback((): WorkflowExecutionData => {
-    return {
+    const user={
       nodes: enhancedNodes.map(node => ({
         id: node.id,
         type: node.data.nodeType,
@@ -202,6 +203,9 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       })),
       metadata: workflowMetadata,
     };
+    console.log(user);
+    return user;
+    
   }, [enhancedNodes, edges, workflowMetadata]);
 
   // Load workflow from backend data
@@ -232,11 +236,12 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (triggerNodes.length === 0) {
       errors.push('Workflow must have at least one trigger node');
     }
-
+    getWorkflowExecutionData();
     return {
       isValid: errors.length === 0,
       errors,
     };
+
   }, [enhancedNodes]);
 
   const updateWorkflowMetadata = useCallback((updates: Partial<WorkflowExecutionData['metadata']>) => {

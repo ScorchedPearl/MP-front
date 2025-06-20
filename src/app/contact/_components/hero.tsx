@@ -1,5 +1,7 @@
 import { SendIcon } from "lucide-react";
 export default function Hero() {
+  // Contact Controller
+  // React Hook Form
  return (
     <div className="min-h-screen bg-black z-auto">
       
@@ -13,13 +15,13 @@ export default function Hero() {
           </p>
         </div>
 
-  
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto">
           <div className="lg:col-span-8">
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-8">
               <h2 className="text-2xl font-semibold text-white mb-8">Send us a message</h2>
               
-              <form className="space-y-6">
+              <form className="space-y-6" >
     
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

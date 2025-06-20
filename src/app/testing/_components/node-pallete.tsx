@@ -7,14 +7,8 @@ import NodePalettePanel from './_components/nonCollapsiblePannel';
 const NodePalette: React.FC = () => {
   const { togglePalette, isPaletteOpen, setIsPaletteOpen } = useDragContext();
 
-  console.log('Node Palette State:', {
-    isPaletteOpen,
-    togglePalette: !!togglePalette,
-    setIsPaletteOpen: !!setIsPaletteOpen
-  });
 
   const handleToggle = () => {
-    console.log('Toggle clicked, current state:', isPaletteOpen);
     if (togglePalette) {
       togglePalette();
     } else if (setIsPaletteOpen) {
@@ -23,7 +17,6 @@ const NodePalette: React.FC = () => {
   };
 
   const handleClose = () => {
-    console.log('Close clicked');
     if (setIsPaletteOpen) {
       setIsPaletteOpen(false);
     }
