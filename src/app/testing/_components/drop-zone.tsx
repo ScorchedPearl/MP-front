@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css';
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from '@/lib/mockdata';
 import WorkflowNode from './_components/wokrflowNode';
 import { useDragContext } from '@/provider/dragprovider';
+import SaveWorkflowButton from '@/components/workflow/SaveWorkflowButton';
 
 export type CustomNode = Node<WorkflowNodeData> 
 
@@ -153,12 +154,10 @@ const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
   console.log('🔥 ReactFlow Selection changed:', params);
   console.log('🔥 Selected node IDs:', params.nodes.map(n => n.id));
   
-  // Make sure to call the drag context's onSelectionChange
   if (onSelectionChange) {
     onSelectionChange(params);
   }
   
-  // Also update the selectedNodes directly
   if (setSelectedNodes) {
     setSelectedNodes(params.nodes as Node<WorkflowNodeData>[]);
   }
@@ -297,6 +296,7 @@ const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
             </div>
           </div>
         </div>
+        <div className='mt-3'><SaveWorkflowButton /></div>
       </div>
     </div>
   );

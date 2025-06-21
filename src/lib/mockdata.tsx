@@ -35,6 +35,25 @@ export interface NodeTemplate {
 }
 export const nodeTemplates: NodeTemplate[] = [
   {
+    id: '0',
+    type: 'start',
+    label: 'Start',
+    description: 'Start of the workflow with initial context',
+    category: 'Triggers',
+    icon: '🚀',
+    defaultConfig: {
+      context: {
+        user: {
+          name: 'Saumya',
+          email: 'saumyasood27@gmail.com',
+          score: 85
+        }
+      }
+    },
+    inputs: [],
+    outputs: [{ id: 'output', label: 'Context', type: 'object' }]
+  },
+  {
     id: '1',
     type: 'trigger',
     label: 'Webhook',
@@ -93,3 +112,4 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Data', type: 'object' }]
   }
 ];
+

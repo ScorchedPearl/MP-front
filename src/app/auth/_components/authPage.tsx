@@ -7,8 +7,8 @@ import { useGoogleLogin, TokenResponse } from "@react-oauth/google";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserIcon, MailIcon, LockIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { set, useForm } from "react-hook-form";
 import OTPEntryPage from "./optpage";
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -21,7 +21,12 @@ export default function AuthPage() {
   } = useForm();
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isOtpPage,setIsOtpPage ] = useState(false); 
-  const { googleAuth, generateOTP, sendOTP, changePassword, signUp, signIn } = useUser();
+  const { currentUser,googleAuth, generateOTP, sendOTP, changePassword, signUp, signIn } = useUser();
+  useEffect(() => {
+    if (currentUser) {
+      redirect("/flow");
+    }
+  }, [currentUser]);
   async function waitForOtpVerification(checkInterval = 100, timeout = 30000) {
     return new Promise((resolve, reject) => {
       const interval = setInterval(() => {
@@ -57,7 +62,7 @@ export default function AuthPage() {
   
       localStorage.removeItem("currentOtp");
       reset();
-      redirect("/");
+      redirect("/flow");
     }
 
     if (isSignUp) {
@@ -101,11 +106,12 @@ export default function AuthPage() {
       console.log(cred);
       const token = await googleAuth(cred.access_token);
       localStorage.setItem('__Pearl_Token', token);
+      redirect("/flow");
     },
     onError: () => console.log("Login Failed"),
     scope: "openid profile email",
   });
-  
+
  return isOtpPage ? (
      <div>
        <OTPEntryPage generateOTP={generateOTP} />

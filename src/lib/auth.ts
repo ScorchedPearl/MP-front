@@ -1,23 +1,34 @@
+import { User } from "@/provider/userprovider";
 import axios from "axios";
 
-export const currentUserFetcher = async () => {
- try {
-   const token="Bearer "+localStorage.getItem('__Pearl_Token') || '';
-   console.log(token)
-   const user = await axios.get("http://localhost:2706/api/v1/user/current-user", {
-     headers: {
-       Authorization: token,
-     },
-   });
-   if (user.status === 200) {
-     return user.data;
-   } else {
-     console.log("Error fetching user data");
-   }
- } catch (error) {
-   console.error("Error fetching user data:", error);
- }
-}
+export const currentUserFetcher = async (): Promise<User | null> => {
+  try {
+    const rawToken = localStorage.getItem('__Pearl_Token');
+    if (!rawToken) return null;
+
+    const token = `Bearer ${rawToken}`;
+    const response = await axios.get("http://localhost:2706/api/v1/user/current-user", {
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    if (response.status === 200) {
+      const { name, email } = response.data;
+
+      return {
+        name,
+        email,
+        avatar: "/placeholder.svg", 
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
+};
+
 
 
 

@@ -5,23 +5,29 @@ import NodePalette from "../testing/_components/node-pallete";
 import { PropertiesPanel } from "../testing/_components/properties";
 import Sidebar from "./sidebar";
 import CanvasDropZone from "../testing/_components/drop-zone";
+import { SidebarProvider } from "@/provider/sidebarContext";
+import { UserProvider } from "@/provider/userprovider";
 
 export default function FlowPage() {
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
+    <UserProvider> 
+      <SidebarProvider>
+        <div className="flex min-h-screen bg-background">
+          <Sidebar />
+          <div className="flex-1 flex flex-col">
             <DragProvider>
-                  <WorkflowProvider>
-                        <div className="overflow-hidden h-screen bg-background flex">
-                              <CanvasDropZone />
-                              <NodePalette />
-                              <PropertiesPanel />
-                        </div>
-                  </WorkflowProvider>
+              <WorkflowProvider>
+                <div className="overflow-hidden h-screen bg-background flex">
+                  <CanvasDropZone />
+                  <NodePalette />
+                  <PropertiesPanel />
+                </div>
+              </WorkflowProvider>
             </DragProvider>
-      </div>
-    </div>
+          </div>
+        </div>
+      </SidebarProvider>
+    </UserProvider>
   );
 }
 
