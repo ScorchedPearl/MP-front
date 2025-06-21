@@ -210,8 +210,7 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return user;
   
   }, [enhancedNodes, edges, workflowMetadata]);
-  
-  // Load workflow from backend data
+
   const loadWorkflow = useCallback((data: WorkflowExecutionData) => {
     const loadedNodes: EnhancedNode[] = data.nodes.map(nodeData => ({
       id: nodeData.id,

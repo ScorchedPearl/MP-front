@@ -8,10 +8,9 @@ export function serializeWorkflowForBackend(data: WorkflowExecutionData) {
       data: node.configuration, 
     })),
     edges: data.edges.map((edge) => ({
+      id: edge.id,
       source: edge.source,
-      target: edge.target,
-      sourceHandle: edge.sourceHandle,
-      targetHandle: edge.targetHandle,
+      target: edge.target
     })),
   };
 }

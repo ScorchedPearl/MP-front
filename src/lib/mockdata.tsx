@@ -44,9 +44,8 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: {
       context: {
         user: {
-          name: 'Saumya',
-          email: 'saumyasood27@gmail.com',
-          score: 85
+          name: 'user',
+          email: 'user@example.com'
         }
       }
     },

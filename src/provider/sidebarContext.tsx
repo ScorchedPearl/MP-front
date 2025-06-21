@@ -81,12 +81,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
                 title: "Failed Executions",
                 url: "#",
                 badge: stats.failedExecutions.toString(),
-              },
-              {
-                title: "Scheduled",
-                url: "#",
-                badge: stats.scheduled.toString(),
-              },
+              }
             ],
           },
         ])
