@@ -104,7 +104,7 @@ export default function Creator() {
   };
 
   return (
-    <section className="py-32 bg-gradient-to-b from-gray-50 to-white">
+    <section  className="py-32 bg-gradient-to-b from-gray-50 to-white select-none">
       <div className=" mx-auto  text-center">
         <div className="bg-black rounded-3xl py-12 md:py-16 relative overflow-hidden">
   
@@ -112,7 +112,7 @@ export default function Creator() {
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
           
-      <div className="grid grid-rows-[auto,1fr] md:grid-rows-10 mx-4 md:mx-10 lg:mx-40">
+      <div id="creators" className="grid grid-rows-[auto,1fr] md:grid-rows-10 mx-4 md:mx-10 lg:mx-40">
         <div className="row-span-3 w-full">
           <div className="flex flex-col md:flex-row justify-between w-full py-4">
             <div className="text-white pt-2 md:pt-5">

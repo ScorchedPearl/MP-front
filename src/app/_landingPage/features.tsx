@@ -37,7 +37,7 @@ const Features = () => {
   ];
 
   return (
-    <section className="py-32 bg-gradient-to-b from-white to-gray-50">
+    <section id="features" className="py-32 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 border border-black/10 mb-6">
@@ -81,47 +81,8 @@ const Features = () => {
           ))}
         </div>
 
-        <div className="mt-32 bg-black rounded-3xl p-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:2rem_2rem]" />
-          
-          <div className="relative">
-            <div className="text-center mb-16">
-              <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Trusted by forward-thinking teams
-              </h3>
-              <p className="text-white/60 text-lg">
-                Join thousands of professionals building the future with AI
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-4 gap-8 text-center">
-              <div className="group">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent mb-2">
-                  99.9%
-                </div>
-                <p className="text-white/60">Uptime SLA</p>
-              </div>
-              <div className="group">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent mb-2">
-                  10k+
-                </div>
-                <p className="text-white/60">Active users</p>
-              </div>
-              <div className="group">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent mb-2">
-                  1M+
-                </div>
-                <p className="text-white/60">Workflows executed</p>
-              </div>
-              <div className="group">
-                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent mb-2">
-                  SOC 2
-                </div>
-                <p className="text-white/60">Compliant</p>
-              </div>
-            </div>
-          </div>
-        </div>
+       
+         
       </div>
     </section>
   );
