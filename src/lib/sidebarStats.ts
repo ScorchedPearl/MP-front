@@ -7,19 +7,19 @@ export type SidebarStats = {
   }
   
   export async function fetchSidebarStats(): Promise<SidebarStats> {
-    const token = localStorage.getItem("token");
-
-    if (!token || token === "null") {
-    console.error("No valid token found in localStorage.");
-    throw new Error("Unauthenticated");
+    const rawToken = localStorage.getItem("__Pearl_Token");
+  
+    if (!rawToken || rawToken === "null") {
+      console.error("No valid token found in localStorage.");
+      throw new Error("Unauthenticated");
     }
-
-    const res = await fetch("http://localhost:2706/api/v1/workflows/sidebar-stats", {
-    method: "GET",
-    headers: {
+  
+    const res = await fetch("http://localhost:2706/api/v1/user/sidebar-stats", {
+      method: "GET",
+      headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-    },
+        Authorization: `Bearer ${rawToken}`,
+      },
     });
   
     if (!res.ok) {
@@ -28,5 +28,4 @@ export type SidebarStats = {
   
     return res.json();
   }
-  
   
