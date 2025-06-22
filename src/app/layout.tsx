@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <GoogleOAuthProvider clientId="455624080761-2e7vh29o5qldeimm6qn96qaqjhhgk85h.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId="671966318930-hm29ojcbc0taqrq9o772d0ov8fabtcpu.apps.googleusercontent.com">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -109,6 +109,70 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: { duration: 1000 },
     inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
     outputs: [{ id: 'output', label: 'Data', type: 'object' }]
+  },
+  {
+    id: '6',
+    type: 'googleCalendar',
+    label: 'Google Calendar',
+    description: 'Create an event in Google Calendar',
+    category: 'Actions',
+    icon: '📅',
+    defaultConfig: {
+      summary: '',
+      startTime: '',
+      endTime: ''
+    },
+    inputs: [
+      { id: 'input', label: 'Data', required: false, type: 'object' }
+    ],
+    outputs: [
+      { id: 'output', label: 'Calendar Event', type: 'object' }
+    ]
+  },
+  {
+    id: '7',
+    type: 'calculator',
+    label: 'Calculator',
+    description: 'Evaluate math expression with variables',
+    category: 'Utilities',
+    icon: '🧮',
+    defaultConfig: {
+      expression: '2 + 3 * 5',
+    },
+    inputs: [
+      {
+        id: 'input',
+        label: 'Context',
+        type: 'object',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'output',
+        label: 'Result',
+        type: 'object',
+      },
+    ],
+  },
+  {
+    id: '8',
+    type: 'currentTime',
+    label: 'Current Time',
+    description: 'Get current time in a specific time zone',
+    category: 'Utilities',
+    icon: '🕒',
+    defaultConfig: {
+      timeZone: 'Asia/Kolkata',
+    },
+    inputs: [],
+    outputs: [
+      {
+        id: 'output',
+        label: 'Timestamp',
+        type: 'object',
+      }
+    ]
   }
 ];
 

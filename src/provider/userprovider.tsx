@@ -1,8 +1,11 @@
-import { createContext,useContext } from "react";
-import { useCurrentUser } from "@/hooks/useUser";
-import axios from "axios";
-export interface User{
-  name: string; 
+'use client';
+
+import { createContext, useContext, useState } from 'react';
+import { useCurrentUser } from '@/hooks/useUser';
+import axios from 'axios';
+
+export interface User {
+  name: string;
   email: string;
   avatar: string;
 }
@@ -10,25 +13,31 @@ export interface User{
 interface UserContextType {
   currentUser: User | null;
   isLoading: boolean;
-  googleAuth: (token: string)=> Promise<string>;
+  googleAccessToken: string | null;
+  googleAuth: (token: string) => Promise<string>;
   generateOTP: () => string;
   sendOTP: (email: string) => Promise<string>;
   changePassword: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string,name:string) => Promise<void>;
+  signUp: (email: string, password: string, name: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
 }
+
 const UserContext = createContext<UserContextType>({
   currentUser: null,
   isLoading: true,
-  googleAuth: ()=>{ return Promise.resolve("")},
+  googleAccessToken: null,
+  googleAuth: () => Promise.resolve(""),
   generateOTP: () => "",
   sendOTP: async () => Promise.resolve(""),
   changePassword: async () => Promise.resolve(),
   signUp: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
 });
+
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, isLoading } = useCurrentUser();
+  const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(null);
+
   async function googleAuth(token: string) {
     try {
       const response = await axios.post(`http://localhost:2706/api/v1/auth/google`, {
@@ -38,24 +47,28 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (response.data?.token) {
         localStorage.setItem('__Pearl_Token', response.data.token);
       }
-      
+
+      setGoogleAccessToken(token); // ✅ store token for future use
       return response.data.token;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to authenticate');
+      throw new Error('Failed to authenticate with Google');
     }
   }
+
   function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
+
   async function sendOTP(email: string) {
     const otp = generateOTP();
     localStorage.setItem("currentOtp", otp);
-    const message=`Your OTP is ${otp}.Thank You For Registering With MarcelPearl`
+    const message = `Your OTP is ${otp}. Thank You For Registering With MarcelPearl`;
+
     const response = await axios.post(`http://localhost:2706/api/v1/auth/otpVerification`, {
       email,
       otp: message,
@@ -64,76 +77,86 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         'Content-Type': 'application/json',
       },
     });
+
     if (response.status !== 200) {
       throw new Error("Failed to send OTP");
     }
+
     return "OTP sent to email";
   }
-  async function signUp(email: string, password: string,name:string) {
+
+  async function signUp(email: string, password: string, name: string) {
     const response = await axios.post(`http://localhost:2706/api/v1/auth/signup`, {
-        name,
-        email,
-        password
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if(!response){
-        throw new Error('Failed to register')
-      }
-      const responseData = await response.data;
-      if(responseData.token ){
-       localStorage.setItem('__Pearl_Token', responseData.token);
-      }
+      name,
+      email,
+      password
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const responseData = await response.data;
+    if (responseData.token) {
+      localStorage.setItem('__Pearl_Token', responseData.token);
+    }
   }
+
   async function signIn(email: string, password: string) {
     const response = await axios.post(`http://localhost:2706/api/v1/auth/signin`, {
-        email,
-        password
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-       if(!response){
-        throw new Error('Failed to authenticate')
-       }
-       const responseData=await response.data
-       if(responseData.token ){
-       localStorage.setItem('__Pearl_Token',responseData.token)
-       }
+      email,
+      password
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const responseData = await response.data;
+    if (responseData.token) {
+      localStorage.setItem('__Pearl_Token', responseData.token);
+    }
   }
+
   async function changePassword(email: string, newPassword: string) {
     const token = localStorage.getItem("currentOtp");
     if (!token) {
       throw new Error("OTP token is missing. Please verify your OTP again.");
     }
-    try {
-      const response = await axios.post(
-        `http://localhost:2706/api/v1/auth/reset-password`,
-        {
-          email,
-          newPassword,
+
+    const response = await axios.post(
+      `http://localhost:2706/api/v1/auth/reset-password`,
+      {
+        email,
+        newPassword,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-  
-      console.log("Password reset response:", response.data);
-    } catch (error) {
-      const err = error as unknown as { response?: { data?: unknown }; message?: string };
-      console.error("Failed to reset password:", err?.response?.data || err?.message);
-    }
+      }
+    );
+
+    console.log("Password reset response:", response.data);
   }
+
   return (
-    <UserContext.Provider value={{ currentUser, isLoading ,googleAuth,generateOTP,sendOTP,changePassword,signUp,signIn}}>
+    <UserContext.Provider
+      value={{
+        currentUser,
+        isLoading,
+        googleAccessToken,
+        googleAuth,
+        generateOTP,
+        sendOTP,
+        changePassword,
+        signUp,
+        signIn,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
-}
+};
 
 export const useUser = () => useContext(UserContext);
