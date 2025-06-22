@@ -2,12 +2,6 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:2706/api/v1/workflows';
 
-function getAuthToken() {
-  const rawToken = localStorage.getItem('__Pearl_Token');
-  if (!rawToken) throw new Error('User not authenticated');
-  return `Bearer ${rawToken}`;
-}
-
 export async function createWorkflow(data: {
   name: string;
   description?: string;
@@ -29,14 +23,24 @@ export async function createWorkflow(data: {
   }
 }
 
-export async function runWorkflow(workflowId: string) {
+function getAuthToken() {
+  const rawToken = localStorage.getItem('__Pearl_Token');
+  if (!rawToken) throw new Error('User not authenticated');
+  return `Bearer ${rawToken}`;
+}
+
+export async function runWorkflow(workflowId: string, googleToken?: string) {
   try {
-    const token = getAuthToken();
+    const headers: any = {
+      Authorization: getAuthToken(),
+    };
+
+    if (googleToken) {
+      headers['X-Google-Access-Token'] = googleToken; 
+    }
 
     const response = await axios.post(`${API_BASE_URL}/${workflowId}/run`, {}, {
-      headers: {
-        Authorization: token,
-      },
+      headers,
     });
 
     return response.data;
@@ -45,3 +49,5 @@ export async function runWorkflow(workflowId: string) {
     throw error;
   }
 }
+
+

@@ -10,6 +10,7 @@ export interface NodeOutput {
   label: string;
   type: string;
 }
+
 export interface WorkflowNodeData {
   id: string;
   [key: string]: unknown;
@@ -29,10 +30,11 @@ export interface NodeTemplate {
   description: string;
   category: string;
   icon: React.ReactNode;
-  defaultConfig?:Record<string, unknown>;
+  defaultConfig?: Record<string, unknown>;
   inputs?: NodeInput[];
   outputs?: NodeOutput[];
 }
+
 export const nodeTemplates: NodeTemplate[] = [
   {
     id: '0',
@@ -45,12 +47,12 @@ export const nodeTemplates: NodeTemplate[] = [
       context: {
         user: {
           name: 'user',
-          email: 'user@example.com'
-        }
-      }
+          email: 'user@example.com',
+        },
+      },
     },
     inputs: [],
-    outputs: [{ id: 'output', label: 'Context', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Context', type: 'object' }],
   },
   {
     id: '1',
@@ -61,7 +63,7 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '🔗',
     defaultConfig: { url: '', method: 'POST' },
     inputs: [],
-    outputs: [{ id: 'output', label: 'Data', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Data', type: 'object' }],
   },
   {
     id: '2',
@@ -72,7 +74,7 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '📧',
     defaultConfig: { to: '', subject: '', body: '' },
     inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
-    outputs: [{ id: 'output', label: 'Result', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Result', type: 'object' }],
   },
   {
     id: '3',
@@ -85,8 +87,8 @@ export const nodeTemplates: NodeTemplate[] = [
     inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
     outputs: [
       { id: 'true', label: 'True', type: 'object' },
-      { id: 'false', label: 'False', type: 'object' }
-    ]
+      { id: 'false', label: 'False', type: 'object' },
+    ],
   },
   {
     id: '4',
@@ -97,7 +99,7 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '🔄',
     defaultConfig: { mapping: {} },
     inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
-    outputs: [{ id: 'output', label: 'Transformed', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Transformed', type: 'object' }],
   },
   {
     id: '5',
@@ -108,42 +110,29 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '⏱️',
     defaultConfig: { duration: 1000 },
     inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
-    outputs: [{ id: 'output', label: 'Data', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Data', type: 'object' }],
   },
   {
-    id: '6',
-    type: 'calculator',
-    label: 'Calculator',
-    description: 'Perform basic arithmetic operations',
-    category: 'Utilities',
-    icon: '🧮',
-    defaultConfig: { expression: '' },
-    inputs: [
-      { id: 'operand1', label: 'Operand 1', required:false ,type:'object' },
-    ],
-    outputs: [{ id: 'result', label: 'Result', type: 'object' }]
-  },
-  {
-    id:'7',
-    type:'text-generation',
-    label:'Text Generation',
-    description:'Generate text using AI model',
-    category:'AI',
-    icon:'🤖',
-    defaultConfig: {  prompt: '' },
+    id: '7',
+    type: 'text-generation',
+    label: 'Text Generation',
+    description: 'Generate text using AI model',
+    category: 'AI',
+    icon: '🤖',
+    defaultConfig: { prompt: '' },
     inputs: [{ id: 'input', label: 'Prompt', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Generated Text', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Generated Text', type: 'string' }],
   },
   {
-    id:'8',
-    type:'summarization',
-    label:'Summarization',
-    description:'Summarize text using AI model',
-    category:'AI',
-    icon:'📄',
+    id: '8',
+    type: 'summarization',
+    label: 'Summarization',
+    description: 'Summarize text using AI model',
+    category: 'AI',
+    icon: '📄',
     defaultConfig: { text: '' },
     inputs: [{ id: 'input', label: 'Text', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Summary', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Summary', type: 'string' }],
   },
   {
     id: '9',
@@ -154,7 +143,7 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '🧠',
     defaultConfig: { input: '' },
     inputs: [{ id: 'input', label: 'Input', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Decision', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Decision', type: 'string' }],
   },
   {
     id: '10',
@@ -163,12 +152,12 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Answer questions using AI model',
     category: 'AI',
     icon: '❓',
-    defaultConfig: {  question: '', context: '' },
+    defaultConfig: { question: '', context: '' },
     inputs: [
       { id: 'question', label: 'Question', required: true, type: 'string' },
-      { id: 'context', label: 'Context', required: false, type: 'string' }
+      { id: 'context', label: 'Context', required: false, type: 'string' },
     ],
-    outputs: [{ id: 'output', label: 'Answer', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Answer', type: 'string' }],
   },
   {
     id: '11',
@@ -179,7 +168,7 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '🏷️',
     defaultConfig: { text: '' },
     inputs: [{ id: 'input', label: 'Text', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Class', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Class', type: 'string' }],
   },
   {
     id: '12',
@@ -188,9 +177,9 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Extract named entities from text',
     category: 'AI',
     icon: '🔖',
-    defaultConfig: {  text: '' },
+    defaultConfig: { text: '' },
     inputs: [{ id: 'input', label: 'Text', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Entities', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Entities', type: 'object' }],
   },
   {
     id: '13',
@@ -202,9 +191,9 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: { text: '', targetLanguage: 'en' },
     inputs: [
       { id: 'input', label: 'Text', required: true, type: 'string' },
-      { id: 'targetLanguage', label: 'Target Language', required: true, type: 'string' }
+      { id: 'targetLanguage', label: 'Target Language', required: true, type: 'string' },
     ],
-    outputs: [{ id: 'output', label: 'Translated Text', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Translated Text', type: 'string' }],
   },
   {
     id: '14',
@@ -213,9 +202,9 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Generate content using AI model',
     category: 'AI',
     icon: '✍️',
-    defaultConfig: {  prompt: '' },
+    defaultConfig: { prompt: '' },
     inputs: [{ id: 'input', label: 'Prompt', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Content', type: 'string' }]
+    outputs: [{ id: 'output', label: 'Content', type: 'string' }],
   },
   {
     id: '15',
@@ -226,7 +215,7 @@ export const nodeTemplates: NodeTemplate[] = [
     icon: '🔍',
     defaultConfig: { query: '' },
     inputs: [{ id: 'input', label: 'Query', required: true, type: 'string' }],
-    outputs: [{ id: 'output', label: 'Results', type: 'object' }]
+    outputs: [{ id: 'output', label: 'Results', type: 'object' }],
   },
   {
     id: '16',
@@ -238,9 +227,68 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: { data: '', analysisType: '' },
     inputs: [
       { id: 'data', label: 'Data', required: true, type: 'object' },
-      { id: 'analysisType', label: 'Analysis Type', required: false, type: 'string' }
+      { id: 'analysisType', label: 'Analysis Type', required: false, type: 'string' },
     ],
-    outputs: [{ id: 'output', label: 'Analysis Result', type: 'object' }]
-  }
+    outputs: [{ id: 'output', label: 'Analysis Result', type: 'object' }],
+  },
+  {
+    id: '17',
+    type: 'googleCalendar',
+    label: 'Google Calendar',
+    description: 'Create an event in Google Calendar',
+    category: 'Actions',
+    icon: '📅',
+    defaultConfig: {
+      summary: '',
+      startTime: '',
+      endTime: '',
+    },
+    inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
+    outputs: [{ id: 'output', label: 'Calendar Event', type: 'object' }],
+  },
+  {
+    id: '18',
+    type: 'calculator',
+    label: 'Calculator',
+    description: 'Evaluate math expression with variables',
+    category: 'Utilities',
+    icon: '🧮',
+    defaultConfig: {
+      expression: '2 + 3 * 5',
+    },
+    inputs: [
+      {
+        id: 'input',
+        label: 'Context',
+        type: 'object',
+        required: true,
+      },
+    ],
+    outputs: [
+      {
+        id: 'output',
+        label: 'Result',
+        type: 'object',
+      },
+    ],
+  },
+  {
+    id: '19',
+    type: 'currentTime',
+    label: 'Current Time',
+    description: 'Get current time in a specific time zone',
+    category: 'Utilities',
+    icon: '🕒',
+    defaultConfig: {
+      timeZone: 'Asia/Kolkata',
+    },
+    inputs: [],
+    outputs: [
+      {
+        id: 'output',
+        label: 'Timestamp',
+        type: 'object',
+      },
+    ],
+  },
 ];
-

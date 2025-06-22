@@ -25,9 +25,9 @@ export function NavUser({
   }
 }) {
   const {useLogout}=useUser();
-  const logout = useLogout();
   const handleLogout = () => {
-    logout();
+      useLogout();
+      window.location.href = "/";
   };
   return (
     <DropdownMenu>
