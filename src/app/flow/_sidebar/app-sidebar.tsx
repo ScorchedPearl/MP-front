@@ -18,7 +18,6 @@ import { useWorkflow } from "@/provider/statecontext"
 import { useState } from "react"
 import { serializeWorkflowForBackend } from "@/lib/serializeWorkflowData"
 import { createWorkflow, runWorkflow } from "@/lib/api"
-import { set } from "react-hook-form"
 
 export function AppSidebar() {
   const { user, navMain } = useSidebar() 
@@ -26,12 +25,24 @@ export function AppSidebar() {
    const [isRunning, setIsRunning] = useState(false);
     const [workflowId, setWorkflowId] = useState<string | null>(null);
   return (
-    <div className="relative flex flex-col h-full bg-gray-950 text-gray-200">
+    <div className="relative flex flex-col h-screen bg-black text-white overflow-hidden">
+      {/* Grid pattern background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50" />
+      </div>
+
+      {/* Animated background elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000" />
+
       <div className="relative flex flex-col h-full">
-        <div className="p-4 border-b border-gray-700 backdrop-blur-sm bg-gray-900/50">
+        {/* Header */}
+        <div className="p-4 border-b border-white/10 backdrop-blur-sm bg-white/5">
           <div className="flex items-center gap-2">
             <Link href="/">
-              <span className="text-xl font-bold text-white">MarcelPearl</span>
+              <span className="text-xl font-bold bg-gradient-to-r from bg-cyan-400 to bg-cyan-300 bg-clip-text text-transparent">
+                MarcelPearl
+              </span>
             </Link>
           </div>
         </div>
@@ -40,83 +51,88 @@ export function AppSidebar() {
           <div className="p-2 space-y-4">
             <NavMain items={navMain} />
 
+            {/* Quick Actions */}
             <div className="space-y-1">
               <div className="px-3 py-2">
-                <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-gray-100">
+                <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-white">
                   Quick Actions
                 </h2>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-gray-600 hover:bg-gray-700 text-gray-200"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Workflow
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-gray-600 hover:bg-gray-700 text-gray-200 mt-3"
-                  onClick={async () => {
-                  const fullWorkflow = getWorkflowExecutionData();
-                  const payload = {
-                    name: fullWorkflow.metadata.name,
-                    description: fullWorkflow.metadata.description,
-                    workflowData: serializeWorkflowForBackend(fullWorkflow),
-                  };
-                  try {
-                    const response = await createWorkflow(payload);
-                    setWorkflowId(response.id); 
-                  } catch (error) {
-                    console.error('❌ Error saving workflow:', error);
-                  }
-                  }}
-                >
-                  <Save></Save>
-                  Save Workflow
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-gray-600 hover:bg-gray-700 text-gray-200 mt-3"
-                  disabled={!workflowId}
-                  onClick={async () => {
-                  if (!workflowId) return;
-                  try {
-                    setIsRunning(true);
-                    const result = await runWorkflow(workflowId);
-                    console.log('🚀 Workflow run started:', result);
-                  } catch (error) {
-                    console.error('❌ Failed to run workflow:', error);
-                  } finally {
-                    setIsRunning(false);
-                  }
-                  }}
-                >
-                  <Play className="mr-2 h-4 w-4" />
-                  {isRunning ? 'Running...' : 'Run Workflow'}
+                <div className="space-y-3">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    <Plus className="mr-2 h-4 w-4 text-cyan-400" />
+                    New Workflow
+                  </Button>
                   
-                </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105"
+                    onClick={async () => {
+                    const fullWorkflow = getWorkflowExecutionData();
+                    const payload = {
+                      name: fullWorkflow.metadata.name,
+                      description: fullWorkflow.metadata.description,
+                      workflowData: serializeWorkflowForBackend(fullWorkflow),
+                    };
+                    try {
+                      const response = await createWorkflow(payload);
+                      setWorkflowId(response.id); 
+                    } catch (error) {
+                      console.error('❌ Error saving workflow:', error);
+                    }
+                    }}
+                  >
+                    <Save className="mr-2 h-4 w-4 text-cyan-400" />
+                    Save Workflow
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                    disabled={!workflowId}
+                    onClick={async () => {
+                    if (!workflowId) return;
+                    try {
+                      setIsRunning(true);
+                      const result = await runWorkflow(workflowId);
+                      console.log('🚀 Workflow run started:', result);
+                    } catch (error) {
+                      console.error('❌ Failed to run workflow:', error);
+                    } finally {
+                      setIsRunning(false);
+                    }
+                    }}
+                  >
+                    <Play className="mr-2 h-4 w-4 text-cyan-400" />
+                    {isRunning ? 'Running...' : 'Run Workflow'}
+                  </Button>
+                </div>
               </div>
             </div>
 
+            {/* Help & Settings */}
             <div className="space-y-1">
               <div className="px-3 py-2">
-                <div className="space-y-1">
+                <div className="space-y-3">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start hover:bg-gray-700 text-gray-200"
+                    className="w-full justify-start hover:bg-white/5 text-white/80 hover:text-white rounded-xl transition-all duration-300"
                     asChild
                   >
                     <a href="/contact" className="flex items-center">
-                      <HelpCircle className="mr-2 h-4 w-4" />
+                      <HelpCircle className="mr-2 h-4 w-4 text-cyan-400" />
                       Help & Support
                     </a>
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start hover:bg-gray-700 text-gray-200"
+                    className="w-full justify-start hover:bg-white/5 text-white/80 hover:text-white rounded-xl transition-all duration-300"
                     asChild
                   >
                     <a href="/" className="flex items-center">
-                      <Settings2 className="mr-2 h-4 w-4" />
+                      <Settings2 className="mr-2 h-4 w-4 text-cyan-400" />
                       Home
                     </a>
                   </Button>
@@ -126,7 +142,8 @@ export function AppSidebar() {
           </div>
         </ScrollArea>
 
-        <div className="p-4 border-t border-gray-700 backdrop-blur-sm bg-gray-900/50">
+        {/* User section */}
+        <div className="p-4 border-t bottom-0 border-white/10 backdrop-blur-sm bg-white/5">
           <NavUser user={user} />
         </div>
       </div>

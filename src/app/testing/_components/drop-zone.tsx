@@ -177,7 +177,7 @@ const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodesDelete={onNodesDelete}
-          onSelectionChange={handleSelectionChange}  
+          onSelectionChange={handleSelectionChange}
           nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-right"
@@ -194,13 +194,13 @@ const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
           selectionOnDrag
           selectionMode={SelectionMode.Partial}
         >
-          <Background 
-            color="#1f2937" 
-            gap={20} 
+          <Background
+            color="#1f2937"
+            gap={20}
             size={1}
             variant={BackgroundVariant.Dots}
           />
-          <Controls 
+          <Controls
             showInteractive={false}
             showZoom={false}
             className="bg-black/80 backdrop-blur-xl border border-white/10 shadow-xl [&>button]:bg-black/60 [&>button]:border-white/10 [&>button]:text-white/60 [&>button:hover]:bg-black/80 [&>button:hover]:text-white [&>button:hover]:border-cyan-400/50"
