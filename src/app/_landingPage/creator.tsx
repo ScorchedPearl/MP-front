@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import { useState } from "react";
 import { FaCloud, FaCogs, FaJava } from "react-icons/fa";
 import { MdApi } from "react-icons/md";
+import { SiFastapi, SiLangchain } from "react-icons/si";
 import {
   SiDocker,
   SiGit,
@@ -33,6 +34,10 @@ export default function Creator() {
         { icon: SiGraphql, name: "GraphQL" },
         { icon: MdApi, name: "REST APIs" },
         { icon: SiPostgresql, name: "PostgreSQL" },
+        { icon: SiTypescript, name: "TypeScript" },
+        { icon: SiNextdotjs, name: "Next.js" },
+        { icon: SiDocker, name: "Docker" },
+        { icon: FaCloud, name: "Cloud" },
       ],
       imageUrl: "finalSaumya.png",
     },
@@ -50,6 +55,11 @@ export default function Creator() {
         { icon: FaCogs, name: "DevOps" },
         { icon: FaCloud, name: "Cloud" },
         { icon: SiGit, name: "Git" },
+        { icon: FaJava, name: "Java" },
+        { icon: SiGraphql, name: "GraphQL" },
+        { icon: SiFastapi, name: "FastAPI" },
+        {icon: SiLangchain , name: "LangChain"},
+        { icon: SiPostgresql, name: "PostgreSQL" },
       ],
       imageUrl: "vishwasfinal.png",
     },

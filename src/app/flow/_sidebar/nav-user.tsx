@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { useUser } from "@/provider/userprovider"
 
 export function NavUser({
   user,
@@ -23,6 +24,11 @@ export function NavUser({
     avatar: string
   }
 }) {
+  const {useLogout}=useUser();
+  const logout = useLogout();
+  const handleLogout = () => {
+    logout();
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -57,32 +63,23 @@ export function NavUser({
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Sparkles />
-            Upgrade to Pro
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        {user.name!== "Guest" ?(
+          
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
           <LogOut />
           Log out
         </DropdownMenuItem>
+          
+        ):(
+        <DropdownMenuItem onClick={()=>{
+          window.location.href = "/";
+        }} className="cursor-pointer">
+          <LogOut />
+          Home
+        </DropdownMenuItem>
+          
+        )}
+        
       </DropdownMenuContent>
     </DropdownMenu>
   )

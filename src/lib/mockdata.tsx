@@ -109,6 +109,138 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: { duration: 1000 },
     inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
     outputs: [{ id: 'output', label: 'Data', type: 'object' }]
+  },
+  {
+    id: '6',
+    type: 'calculator',
+    label: 'Calculator',
+    description: 'Perform basic arithmetic operations',
+    category: 'Utilities',
+    icon: '🧮',
+    defaultConfig: { expression: '' },
+    inputs: [
+      { id: 'operand1', label: 'Operand 1', required:false ,type:'object' },
+    ],
+    outputs: [{ id: 'result', label: 'Result', type: 'object' }]
+  },
+  {
+    id:'7',
+    type:'text-generation',
+    label:'Text Generation',
+    description:'Generate text using AI model',
+    category:'AI',
+    icon:'🤖',
+    defaultConfig: {  prompt: '' },
+    inputs: [{ id: 'input', label: 'Prompt', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Generated Text', type: 'string' }]
+  },
+  {
+    id:'8',
+    type:'summarization',
+    label:'Summarization',
+    description:'Summarize text using AI model',
+    category:'AI',
+    icon:'📄',
+    defaultConfig: { text: '' },
+    inputs: [{ id: 'input', label: 'Text', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Summary', type: 'string' }]
+  },
+  {
+    id: '9',
+    type: 'ai-decision',
+    label: 'AI Decision',
+    description: 'Make a decision using an AI model',
+    category: 'AI',
+    icon: '🧠',
+    defaultConfig: { input: '' },
+    inputs: [{ id: 'input', label: 'Input', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Decision', type: 'string' }]
+  },
+  {
+    id: '10',
+    type: 'question-answer',
+    label: 'Question Answer',
+    description: 'Answer questions using AI model',
+    category: 'AI',
+    icon: '❓',
+    defaultConfig: {  question: '', context: '' },
+    inputs: [
+      { id: 'question', label: 'Question', required: true, type: 'string' },
+      { id: 'context', label: 'Context', required: false, type: 'string' }
+    ],
+    outputs: [{ id: 'output', label: 'Answer', type: 'string' }]
+  },
+  {
+    id: '11',
+    type: 'text-classification',
+    label: 'Text Classification',
+    description: 'Classify text using AI model',
+    category: 'AI',
+    icon: '🏷️',
+    defaultConfig: { text: '' },
+    inputs: [{ id: 'input', label: 'Text', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Class', type: 'string' }]
+  },
+  {
+    id: '12',
+    type: 'named-entity',
+    label: 'Named Entity Recognition',
+    description: 'Extract named entities from text',
+    category: 'AI',
+    icon: '🔖',
+    defaultConfig: {  text: '' },
+    inputs: [{ id: 'input', label: 'Text', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Entities', type: 'object' }]
+  },
+  {
+    id: '13',
+    type: 'translation',
+    label: 'Translation',
+    description: 'Translate text using AI model',
+    category: 'AI',
+    icon: '🌐',
+    defaultConfig: { text: '', targetLanguage: 'en' },
+    inputs: [
+      { id: 'input', label: 'Text', required: true, type: 'string' },
+      { id: 'targetLanguage', label: 'Target Language', required: true, type: 'string' }
+    ],
+    outputs: [{ id: 'output', label: 'Translated Text', type: 'string' }]
+  },
+  {
+    id: '14',
+    type: 'content-generation',
+    label: 'Content Generation',
+    description: 'Generate content using AI model',
+    category: 'AI',
+    icon: '✍️',
+    defaultConfig: {  prompt: '' },
+    inputs: [{ id: 'input', label: 'Prompt', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Content', type: 'string' }]
+  },
+  {
+    id: '15',
+    type: 'search-agent',
+    label: 'Search Agent',
+    description: 'Search information using AI agent',
+    category: 'AI',
+    icon: '🔍',
+    defaultConfig: { query: '' },
+    inputs: [{ id: 'input', label: 'Query', required: true, type: 'string' }],
+    outputs: [{ id: 'output', label: 'Results', type: 'object' }]
+  },
+  {
+    id: '16',
+    type: 'data-analyst-agent',
+    label: 'Data Analyst Agent',
+    description: 'Analyze data using AI agent',
+    category: 'AI',
+    icon: '📊',
+    defaultConfig: { data: '', analysisType: '' },
+    inputs: [
+      { id: 'data', label: 'Data', required: true, type: 'object' },
+      { id: 'analysisType', label: 'Analysis Type', required: false, type: 'string' }
+    ],
+    outputs: [{ id: 'output', label: 'Analysis Result', type: 'object' }]
   }
 ];
 

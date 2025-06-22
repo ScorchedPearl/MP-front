@@ -8,7 +8,7 @@ export function FloatingAddButton({ onClick, isOpen }: {
     <button
       onClick={onClick}
       className={`
-        fixed top-6 left-6 z-50
+        fixed top-6 right-65 z-50
         w-14 h-14 bg-black/80 hover:bg-black/90 border border-white/10
         text-white rounded-sm shadow-xl backdrop-blur-xl
         flex items-center justify-center

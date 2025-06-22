@@ -12,20 +12,22 @@ export default function FlowPage() {
   return (
     <UserProvider> 
       <SidebarProvider>
+        <DragProvider>
+              <WorkflowProvider>
         <div className="flex min-h-screen bg-background">
           <Sidebar />
           <div className="flex-1 flex flex-col">
-            <DragProvider>
-              <WorkflowProvider>
+            
                 <div className="overflow-hidden h-screen bg-background flex">
                   <CanvasDropZone />
                   <NodePalette />
                   <PropertiesPanel />
                 </div>
-              </WorkflowProvider>
-            </DragProvider>
+             
           </div>
         </div>
+         </WorkflowProvider>
+            </DragProvider>
       </SidebarProvider>
     </UserProvider>
   );

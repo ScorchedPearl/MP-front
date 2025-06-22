@@ -17,8 +17,6 @@ import '@xyflow/react/dist/style.css';
 import { NodeTemplate, nodeTemplates, WorkflowNodeData } from '@/lib/mockdata';
 import WorkflowNode from './_components/wokrflowNode';
 import { useDragContext } from '@/provider/dragprovider';
-import SaveWorkflowButton from '@/components/workflow/SaveWorkflowButton';
-import RunWorkflowButton from '@/components/workflow/RunWorkflowButton'; 
 
 export type CustomNode = Node<WorkflowNodeData> 
 
@@ -253,51 +251,6 @@ const handleSelectionChange = useCallback((params: OnSelectionChangeParams) => {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-4 shadow-xl">
-        <div className="flex items-center space-x-6 text-sm">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-cyan-400" />
-            <span className="text-white/70">
-              <span className="font-semibold text-white">{nodes?.length || 0}</span> nodes
-            </span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-white" />
-            <span className="text-white/70">
-              <span className="font-semibold text-white">{edges?.length || 0}</span> connections
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute top-6 right-6 bg-black/80 backdrop-blur-xl border border-white/10 p-4 shadow-xl max-w-sm">
-        <div className="space-y-3">
-          <div className="font-semibold text-white flex items-center space-x-2">
-            <div className="w-2 h-2 bg-cyan-400" />
-            <span>Workflow Controls</span>
-          </div>
-          <div className="text-white/70 space-y-2 text-sm">
-            <div className="flex items-center space-x-2">
-              <span className="text-white/50">•</span>
-              <span>Click nodes to select and edit properties</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-white/50">•</span>
-              <span>Drag from handles to connect</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-white/50">•</span>
-              <span>Delete key to remove selected</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-white/50">•</span>
-              <span>Cmd/Ctrl + click for multi-select</span>
-            </div>
-          </div>
-        </div>
-        <div className='mt-3'><SaveWorkflowButton /></div>
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ interface UserContextType {
   changePassword: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string,name:string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  useLogout: () => () => void;
 }
 const UserContext = createContext<UserContextType>({
   currentUser: null,
@@ -26,6 +27,7 @@ const UserContext = createContext<UserContextType>({
   changePassword: async () => Promise.resolve(),
   signUp: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
+  useLogout: () => () => { console.log("Logout function not implemented") }
 });
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, isLoading } = useCurrentUser();
@@ -129,8 +131,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Failed to reset password:", err?.response?.data || err?.message);
     }
   }
+   const useLogout = () => {
+    const logout = () => {
+      localStorage.removeItem('__Pearl_Token');
+      window.location.reload();
+    };
+    return logout;
+  };
   return (
-    <UserContext.Provider value={{ currentUser, isLoading ,googleAuth,generateOTP,sendOTP,changePassword,signUp,signIn}}>
+    <UserContext.Provider value={{ currentUser, isLoading ,googleAuth,generateOTP,sendOTP,changePassword,signUp,signIn,useLogout}}>
       {children}
     </UserContext.Provider>
   );
