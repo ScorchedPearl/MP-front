@@ -1,5 +1,3 @@
-// Fixed version of canvas drop zone with proper selection tracking
-// src/app/testing/_components/drop-zone.tsx
 
 import React, { useCallback, useRef } from 'react';
 import {
@@ -40,7 +38,7 @@ const WorkflowCanvas = () => {
     setDropPosition, 
     onConnect, 
     onNodesDelete,
-    onSelectionChange , // Added this
+    onSelectionChange,
     setSelectedNodes,
   } = useDragContext();
   

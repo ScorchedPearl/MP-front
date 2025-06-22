@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { UserIcon, MailIcon, LockIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import OTPEntryPage from "./optpage";
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);

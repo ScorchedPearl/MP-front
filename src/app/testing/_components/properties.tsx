@@ -101,6 +101,7 @@ export const PropertiesPanel: React.FC = () => {
     updateNodeData 
   } = useWorkflow();
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [localConfiguration, setLocalConfiguration] = useState<Record<string, any>>({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -129,7 +130,7 @@ export const PropertiesPanel: React.FC = () => {
       setHasUnsavedChanges(false);
     }
   }, [selectedNode, selectedNodeId]);
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleConfigurationChange = (key: string, value: any) => {
     const newConfig = { ...localConfiguration, [key]: value };
     setLocalConfiguration(newConfig);
@@ -185,6 +186,7 @@ export const PropertiesPanel: React.FC = () => {
               </div>
               <div>Available nodes: {enhancedNodes.length}</div>
               <div>Selected ID: {selectedNodeId || 'none'}</div>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <div>Node IDs: {enhancedNodes.map((n: any) => n.id).join(', ') || 'none'}</div>
             </div>
           </div>

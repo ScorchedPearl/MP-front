@@ -121,20 +121,20 @@ export function AppSidebar() {
                     className="w-full justify-start hover:bg-white/5 text-white/80 hover:text-white rounded-xl transition-all duration-300"
                     asChild
                   >
-                    <a href="/contact" className="flex items-center">
+                    <Link href="/contact" className="flex items-center">
                       <HelpCircle className="mr-2 h-4 w-4 text-cyan-400" />
                       Help & Support
-                    </a>
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
                     className="w-full justify-start hover:bg-white/5 text-white/80 hover:text-white rounded-xl transition-all duration-300"
                     asChild
                   >
-                    <a href="/" className="flex items-center">
+                    <Link href="/" className="flex items-center">
                       <Settings2 className="mr-2 h-4 w-4 text-cyan-400" />
                       Home
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               </div>

@@ -1,12 +1,11 @@
 "use client"
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
+import { ChevronsUpDown, LogOut } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -24,9 +23,9 @@ export function NavUser({
     avatar: string
   }
 }) {
-  const {useLogout}=useUser();
+  const {logout}=useUser();
   const handleLogout = () => {
-      useLogout();
+      logout();
       window.location.href = "/";
   };
   return (

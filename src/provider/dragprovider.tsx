@@ -27,7 +27,9 @@ const DragContext = createContext<{
   setNodes?: (nodes: Node<WorkflowNodeData>[]) => void;
   edges?: Edge[];
   setEdges?: (edges: Edge[]) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onNodesChange?: (changes: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onEdgesChange?: (changes: any) => void;
   onSelectionChange?: (params: OnSelectionChangeParams) => void;
   nodeIdCounter?: number;

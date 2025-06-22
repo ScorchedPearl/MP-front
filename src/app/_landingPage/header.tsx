@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useUser } from "@/provider/userprovider";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const {currentUser,isLoading} = useUser();
+  const {currentUser} = useUser();
   console.log("Current User:", currentUser);
   const navItems = [
     { name: "Product", href: "#hero" },

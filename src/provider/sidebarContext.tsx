@@ -1,14 +1,14 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
-import { Bot, Home, Zap } from "lucide-react"
+import { Bot, Home, LucideIcon, Zap } from "lucide-react"
 import { useUser } from "./userprovider"
 import { fetchSidebarStats } from "@/lib/sidebarStats"
 
 type NavItem = {
   title: string
   url: string
-  icon?: any
+  icon?: LucideIcon
   isActive?: boolean
   badge?: string
   items?: NavItem[]

@@ -2,19 +2,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTheme } from 'next-themes';
 
 const Loader = () => {
- const { theme } = useTheme();
  
  const gridSize = 3; 
  const kiteSize = 40; 
  const gap = 20; 
  const middleIndex = Math.floor((gridSize * gridSize) / 2); 
-
- const gradientStartColor = theme === 'dark' ? 'blue' : '#7b38ed';
- const gradientEndColor = theme === 'dark' ? 'black' : '#7b38ed';
-
  return (
   <div className="flex justify-center items-center h-screen bg-secondary-background">
    <div
@@ -39,7 +33,7 @@ const Loader = () => {
       transition: {
        repeat: Infinity,
        duration: 2.5,
-       ease: [0.42, 0, 0.58, 1] as any,
+       ease: [0.42, 0, 0.58, 1] as [number, number, number, number],
       },
      };
 

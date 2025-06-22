@@ -20,7 +20,7 @@ interface UserContextType {
   changePassword: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
-  useLogout: () => void;
+  logout: () => void;
 }
 
 const UserContext = createContext<UserContextType>({
@@ -33,7 +33,7 @@ const UserContext = createContext<UserContextType>({
   changePassword: async () => Promise.resolve(),
   signUp: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
-  useLogout: () => {
+  logout: () => {
     localStorage.removeItem('__Pearl_Token');
     window.location.reload();
   },
@@ -144,7 +144,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     console.log("Password reset response:", response.data);
   }
-  const useLogout = () => {
+  const logout = () => {
     localStorage.removeItem('__Pearl_Token');
     setGoogleAccessToken(null);
     window.location.reload();
@@ -162,7 +162,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         changePassword,
         signUp,
         signIn,
-        useLogout
+        logout
       }}
     >
       {children}

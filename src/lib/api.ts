@@ -5,6 +5,7 @@ const API_BASE_URL = 'http://localhost:2706/api/v1/workflows';
 export async function createWorkflow(data: {
   name: string;
   description?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   workflowData: any;
 }) {
   try {
@@ -31,7 +32,7 @@ function getAuthToken() {
 
 export async function runWorkflow(workflowId: string, googleToken?: string) {
   try {
-    const headers: any = {
+    const headers: Record<string, string> = {
       Authorization: getAuthToken(),
     };
 
