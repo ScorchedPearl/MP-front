@@ -118,25 +118,74 @@ export const nodeTemplates: NodeTemplate[] = [
   },
   {
     id: '6',
-    type: 'httpRequest',
-    label: 'HTTP Request',
-    description: 'Make HTTP requests to external APIs',
+    type: 'httpGet',
+    label: 'HTTP GET',
+    description: 'Send a GET request to an external API',
     category: 'Actions',
-    icon: '🌐',
+    icon: '🔍',
     defaultConfig: {
-      url: 'https://api.example.com/endpoint',
+      url: 'https://api.example.com/data',
       method: 'GET',
       headers: '{}',
       body: '{}',
-      useGoogleAuth: false,
-      useGithubAuth: false,
-      useApiKeyAsBearer: false
+      useGoogleAuth: false
     },
-    inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
+    inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
     outputs: [{ id: 'output', label: 'Response', type: 'object' }],
   },
   {
     id: '7',
+    type: 'httpPost',
+    label: 'HTTP POST',
+    description: 'Send a POST request to an external API',
+    category: 'Actions',
+    icon: '📤',
+    defaultConfig: {
+      url: 'https://api.example.com/create',
+      method: 'POST',
+      headers: '{ "Content-Type": "application/json" }',
+      body: '{ "key": "value" }',
+      useGoogleAuth: false
+    },
+    inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
+    outputs: [{ id: 'output', label: 'Response', type: 'object' }],
+  },
+  {
+    id: '8',
+    type: 'httpPut',
+    label: 'HTTP PUT',
+    description: 'Send a PUT request to update data on an external API',
+    category: 'Actions',
+    icon: '🛠️',
+    defaultConfig: {
+      url: 'https://api.example.com/resource',
+      method: 'PUT',
+      headers: '{ "Content-Type": "application/json" }',
+      body: '{ "updatedKey": "updatedValue" }',
+      useGoogleAuth: false
+    },
+    inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
+    outputs: [{ id: 'output', label: 'Response', type: 'object' }],
+  },
+  {
+    id: '9',
+    type: 'httpDelete',
+    label: 'HTTP DELETE',
+    description: 'Send a DELETE request to an external API',
+    category: 'Actions',
+    icon: '🗑️',
+    defaultConfig: {
+      url: 'https://api.example.com/resource/123',
+      method: 'DELETE',
+      headers: '{}',
+      body: '{}',
+      useGoogleAuth: false
+    },
+    inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
+    outputs: [{ id: 'output', label: 'Response', type: 'object' }],
+  },
+  {
+    id: '10',
     type: 'text-generation',
     label: 'Text Generation',
     description: 'Generate text using AI model',
@@ -147,7 +196,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Generated Text', type: 'string' }],
   },
   {
-    id: '8',
+    id: '11',
     type: 'summarization',
     label: 'Summarization',
     description: 'Summarize text using AI model',
@@ -158,7 +207,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Summary', type: 'string' }],
   },
   {
-    id: '9',
+    id: '12',
     type: 'ai-decision',
     label: 'AI Decision',
     description: 'Make a decision using an AI model',
@@ -169,7 +218,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Decision', type: 'string' }],
   },
   {
-    id: '10',
+    id: '13',
     type: 'question-answer',
     label: 'Question Answer',
     description: 'Answer questions using AI model',
@@ -183,7 +232,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Answer', type: 'string' }],
   },
   {
-    id: '11',
+    id: '14',
     type: 'text-classification',
     label: 'Text Classification',
     description: 'Classify text using AI model',
@@ -194,7 +243,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Class', type: 'string' }],
   },
   {
-    id: '12',
+    id: '15',
     type: 'named-entity',
     label: 'Named Entity Recognition',
     description: 'Extract named entities from text',
@@ -205,7 +254,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Entities', type: 'object' }],
   },
   {
-    id: '13',
+    id: '16',
     type: 'translation',
     label: 'Translation',
     description: 'Translate text using AI model',
@@ -219,7 +268,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Translated Text', type: 'string' }],
   },
   {
-    id: '14',
+    id: '17',
     type: 'content-generation',
     label: 'Content Generation',
     description: 'Generate content using AI model',
@@ -230,7 +279,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Content', type: 'string' }],
   },
   {
-    id: '15',
+    id: '18',
     type: 'search-agent',
     label: 'Search Agent',
     description: 'Search information using AI agent',
@@ -241,7 +290,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Results', type: 'object' }],
   },
   {
-    id: '16',
+    id: '19',
     type: 'data-analyst-agent',
     label: 'Data Analyst Agent',
     description: 'Analyze data using AI agent',
@@ -255,7 +304,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Analysis Result', type: 'object' }],
   },
   {
-    id: '17',
+    id: '20',
     type: 'googleCalendar',
     label: 'Google Calendar',
     description: 'Create an event in Google Calendar',
@@ -274,7 +323,7 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Calendar Event', type: 'object' }],
   },
   {
-    id: '18',
+    id: '21',
     type: 'calculator',
     label: 'Calculator',
     description: 'Evaluate math expression with variables',
@@ -300,7 +349,7 @@ export const nodeTemplates: NodeTemplate[] = [
     ],
   },
   {
-    id: '19',
+    id: '22',
     type: 'currentTime',
     label: 'Current Time',
     description: 'Get current time in a specific time zone',
@@ -319,7 +368,7 @@ export const nodeTemplates: NodeTemplate[] = [
     ],
   },
     {
-      id: '20',
+      id: '23',
       type: 'gmailSend',
       label: 'Gmail Send',
       description: 'Send emails using Gmail API',
@@ -337,7 +386,7 @@ export const nodeTemplates: NodeTemplate[] = [
       outputs: [{ id: 'output', label: 'Email Result', type: 'object' }],
     },
     {
-      id: '21',
+      id: '24',
       type: 'gmailSearch',
       label: 'Gmail Search',
       description: 'Search emails in Gmail',
@@ -353,7 +402,7 @@ export const nodeTemplates: NodeTemplate[] = [
       outputs: [{ id: 'output', label: 'Search Results', type: 'object' }],
     },
     {
-      id: '22',
+      id: '25',
       type: 'gmailMarkRead',
       label: 'Gmail Mark Read',
       description: 'Mark Gmail messages as read or unread',
@@ -368,7 +417,7 @@ export const nodeTemplates: NodeTemplate[] = [
       outputs: [{ id: 'output', label: 'Update Result', type: 'object' }],
     },
     {
-      id: '23',
+      id: '26',
       type: 'gmailAddLabel',
       label: 'Gmail Add Label',
       description: 'Add or remove labels from Gmail messages',
@@ -384,7 +433,7 @@ export const nodeTemplates: NodeTemplate[] = [
       outputs: [{ id: 'output', label: 'Label Result', type: 'object' }],
     },
     {
-      id: '24',
+      id: '27',
       type: 'gmailCreateDraft',
       label: 'Gmail Create Draft',
       description: 'Create a draft email in Gmail',
@@ -402,7 +451,7 @@ export const nodeTemplates: NodeTemplate[] = [
       outputs: [{ id: 'output', label: 'Draft Result', type: 'object' }],
     },
     {
-      id: '25',
+      id: '28',
       type: 'gmailReply',
       label: 'Gmail Reply',
       description: 'Reply to a Gmail message',
