@@ -17,13 +17,17 @@ import { useSidebar } from "@/provider/sidebarContext";
 import { useWorkflow } from "@/provider/statecontext"
 import { useState } from "react"
 import { serializeWorkflowForBackend } from "@/lib/serializeWorkflowData"
-import { createWorkflow, runWorkflow } from "@/lib/api"
+import { useRunWorkflow } from "@/hooks/useRunWorkflow"
+import { useSaveWorkflow } from "@/hooks/useSaveWorkflow"
+
 
 export function AppSidebar() {
   const { user, navMain } = useSidebar() 
    const { getWorkflowExecutionData } = useWorkflow();
    const [isRunning, setIsRunning] = useState(false);
     const [workflowId, setWorkflowId] = useState<string | null>(null);
+    const runWorkflowWithAuth = useRunWorkflow();
+  const saveWorkflow = useSaveWorkflow();
   return (
     <div className="relative flex flex-col h-screen bg-black text-white overflow-hidden">
       {/* Grid pattern background */}
@@ -68,46 +72,45 @@ export function AppSidebar() {
                   
                   <Button
                     variant="outline"
-                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105"
+                    className="...your styles..."
                     onClick={async () => {
-                    const fullWorkflow = getWorkflowExecutionData();
-                    const payload = {
-                      name: fullWorkflow.metadata.name,
-                      description: fullWorkflow.metadata.description,
-                      workflowData: serializeWorkflowForBackend(fullWorkflow),
-                    };
-                    try {
-                      const response = await createWorkflow(payload);
-                      setWorkflowId(response.id); 
-                    } catch (error) {
-                      console.error('❌ Error saving workflow:', error);
-                    }
+                      try {
+                        const response = await saveWorkflow();
+                        setWorkflowId(response.id);
+                        console.log("✅ Workflow saved:", response);
+                      } catch (error) {
+                        console.error("❌ Save failed:", error);
+                      }
                     }}
                   >
                     <Save className="mr-2 h-4 w-4 text-cyan-400" />
                     Save Workflow
                   </Button>
                   
+                  
                   <Button
-                    variant="outline"
-                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                     disabled={!workflowId}
                     onClick={async () => {
-                    if (!workflowId) return;
-                    try {
-                      setIsRunning(true);
-                      const result = await runWorkflow(workflowId);
-                      console.log('🚀 Workflow run started:', result);
-                    } catch (error) {
-                      console.error('❌ Failed to run workflow:', error);
-                    } finally {
-                      setIsRunning(false);
-                    }
+                      if (!workflowId) return;
+
+                      const fullWorkflow = getWorkflowExecutionData(); 
+                      const payload = serializeWorkflowForBackend(fullWorkflow);
+
+                      try {
+                        setIsRunning(true);
+                        const result = await runWorkflowWithAuth(workflowId, payload); 
+                        console.log('🚀 Workflow run started:', result);
+                      } catch (error) {
+                        console.error('❌ Failed to run workflow:', error);
+                      } finally {
+                        setIsRunning(false);
+                      }
                     }}
                   >
                     <Play className="mr-2 h-4 w-4 text-cyan-400" />
                     {isRunning ? 'Running...' : 'Run Workflow'}
                   </Button>
+
                 </div>
               </div>
             </div>
