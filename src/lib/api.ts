@@ -36,28 +36,48 @@ export async function runWorkflow(
   googleToken?: string
 ) {
   console.log("📌 runWorkflow called with ID:", workflowId);
+  console.log("📌 Workflow data structure:", workflowData);
+  
   try {
     const headers: Record<string, string> = {
       Authorization: getAuthToken(),
       "Content-Type": "application/json",
     };
 
-    const nodes = Object.values(workflowData?.nodes || {});
+    const nodes = workflowData?.nodes || [];
     const hasGoogleNode = nodes.some((node: any) => {
-      const url = node?.data?.url || "";
+      const url: string = node?.data?.url || "";
       const explicitGoogle = node?.data?.useGoogleAuth === true;
-      return url.includes("googleapis.com") || explicitGoogle;
+      const isGoogleCalendar = node?.type === "googleCalendar";
+      const isGmailNode = node?.type?.startsWith("gmail");
+      
+      console.log("🔍 Checking node:", {
+        id: node.id,
+        type: node.type,
+        url,
+        useGoogleAuth: explicitGoogle,
+        isGoogleCalendar,
+        isGmailNode
+      });
+      
+      return url.includes("googleapis.com") || explicitGoogle || isGoogleCalendar || isGmailNode;
     });
-    console.log("hello");
+    
+    console.log("🔍 Has Google node:", hasGoogleNode);
+    
     if (hasGoogleNode) {
       const tokenToUse = googleToken || localStorage.getItem("__Google_Access_Token__");
-      console.log("🔐 Token being sent:", tokenToUse);
+      console.log("🔐 Token being sent:", tokenToUse ? "TOKEN_PRESENT" : "NO_TOKEN");
+      
       if (tokenToUse) {
         headers["X-Google-Access-Token"] = tokenToUse;
+        console.log("✅ Added X-Google-Access-Token header");
       } else {
         console.warn("⚠️ Missing Google access token for workflow with Google-auth node");
       }
     }
+
+    console.log("📤 Request headers:", Object.keys(headers));
 
     const response = await axios.post(
       `${API_BASE_URL}/${workflowId}/run`,
@@ -74,5 +94,3 @@ export async function runWorkflow(
     throw error;
   }
 }
-
-

@@ -106,10 +106,11 @@ export default function AuthPage() {
       console.log(cred);
       const token = await googleAuth(cred.access_token);
       localStorage.setItem('__Pearl_Token', token);
+      localStorage.setItem('__Google_Access_Token__', cred.access_token);
       redirect("/flow");
     },
     onError: () => console.log("Login Failed"),
-    scope: "openid profile email",
+    scope: "openid profile email https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.send",
   });
 
  return isOtpPage ? (

@@ -52,12 +52,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.data?.token) {
         localStorage.setItem('__Pearl_Token', response.data.token);
       }
-
-      setGoogleAccessToken(token); // ✅ store token for future use
+  
+      localStorage.setItem('__Google_Access_Token__', token);
+      setGoogleAccessToken(token);
+      
       return response.data.token;
     } catch (error) {
       console.error(error);
