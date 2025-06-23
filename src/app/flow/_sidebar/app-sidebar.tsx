@@ -19,6 +19,7 @@ import { useState } from "react"
 import { serializeWorkflowForBackend } from "@/lib/serializeWorkflowData"
 import { useRunWorkflow } from "@/hooks/useRunWorkflow"
 import { useSaveWorkflow } from "@/hooks/useSaveWorkflow"
+import { InputTag, Tag } from "@/components/ui/tag-input";
 
 
 export function AppSidebar() {
@@ -28,19 +29,20 @@ export function AppSidebar() {
     const [workflowId, setWorkflowId] = useState<string | null>(null);
     const runWorkflowWithAuth = useRunWorkflow();
   const saveWorkflow = useSaveWorkflow();
+
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [inputValue, setInputValue] = useState<string>("");
+
   return (
     <div className="relative flex flex-col h-screen bg-black text-white overflow-hidden">
-      {/* Grid pattern background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50" />
       </div>
 
-      {/* Animated background elements */}
       <div className="absolute top-20 left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-20 right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl animate-pulse delay-1000" />
 
       <div className="relative flex flex-col h-full">
-        {/* Header */}
         <div className="p-4 border-b border-white/10 backdrop-blur-sm bg-white/5">
           <div className="flex items-center gap-2">
             <Link href="/">
@@ -55,7 +57,6 @@ export function AppSidebar() {
           <div className="p-2 space-y-4">
             <NavMain items={navMain} />
 
-            {/* Quick Actions */}
             <div className="space-y-1">
               <div className="px-3 py-2">
                 <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-white">
@@ -90,6 +91,8 @@ export function AppSidebar() {
                   
                   <Button
                     disabled={!workflowId}
+                    variant="outline"
+                    className="...your styles..."
                     onClick={async () => {
                       if (!workflowId) return;
 
@@ -110,12 +113,25 @@ export function AppSidebar() {
                     <Play className="mr-2 h-4 w-4 text-cyan-400" />
                     {isRunning ? 'Running...' : 'Run Workflow'}
                   </Button>
-
+                  <h2 className="mt-4 px-4 text-lg font-semibold tracking-tight text-white">
+                  Return Variables
+                  </h2>
+                  <div className="w-60">
+                    <InputTag
+                      inputValue={inputValue}
+                      setInputValue={setInputValue}
+                      tags={tags}
+                      setTags={setTags}
+                      className="mt-4"
+                      inputClassName="bg-white/5 text-white border-white/20 placeholder:text-white/40 w-60"
+                      tagContainerClassName="bg-cyan-500 text-white"
+                      removeTagButtonClassName="text-white"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Help & Settings */}
             <div className="space-y-1">
               <div className="px-3 py-2">
                 <div className="space-y-3">
@@ -145,7 +161,6 @@ export function AppSidebar() {
           </div>
         </ScrollArea>
 
-        {/* User section */}
         <div className="p-4 border-t bottom-0 border-white/10 backdrop-blur-sm bg-white/5">
           <NavUser user={user} />
         </div>

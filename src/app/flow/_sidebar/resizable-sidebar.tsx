@@ -59,7 +59,6 @@ export function ResizableSidebar({
         className="relative bg-black border-r border-white/10"
         style={{ width: `${width}px` }}
       >
-        {/* Grid pattern background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50" />
         </div>
