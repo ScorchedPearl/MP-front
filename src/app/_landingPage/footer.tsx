@@ -39,7 +39,9 @@ const Footer = () => {
         <Link href="/privacy-policy" className="hover:text-cyan-400 transition-colors">
         <p  className="hover:text-cyan-400 transition-colors">Privacy Policy</p>
         </Link>
-        <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a>
+        <Link href="/terms-of-service" className="hover:text-cyan-400 transition-colors">
+        <p  className="hover:text-cyan-400 transition-colors">Terms of Service</p>
+        </Link>
       </div>
       <div className="flex items-center gap-2 text-white/60">
         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
