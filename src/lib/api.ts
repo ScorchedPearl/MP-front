@@ -1,6 +1,7 @@
+import { Tag } from '@/components/ui/tag-input';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:2706/api/v1/workflows';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/workflows`;
 
 function getAuthToken() {
   const rawToken = localStorage.getItem('__Pearl_Token');
@@ -33,7 +34,9 @@ export async function createWorkflow(data: {
 export async function runWorkflow(
   workflowId: string,
   workflowData: any = {},
+   tags:Tag[],
   googleToken?: string
+ 
 ) {
   console.log("📌 runWorkflow called with ID:", workflowId);
   console.log("📌 Workflow data structure:", workflowData);
@@ -78,10 +81,14 @@ export async function runWorkflow(
     }
 
     console.log("📤 Request headers:", Object.keys(headers));
-
+    const request={
+      workflowData,
+      returnVariables:tags.map(tag => tag.text),
+      waitForCompletion:true
+    }
     const response = await axios.post(
       `${API_BASE_URL}/${workflowId}/run`,
-      workflowData,
+      request,
       { headers }
     );
 

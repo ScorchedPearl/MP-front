@@ -20,6 +20,7 @@ import { serializeWorkflowForBackend } from "@/lib/serializeWorkflowData"
 import { useRunWorkflow } from "@/hooks/useRunWorkflow"
 import { useSaveWorkflow } from "@/hooks/useSaveWorkflow"
 import { InputTag, Tag } from "@/components/ui/tag-input";
+import { set } from "react-hook-form"
 
 
 export function AppSidebar() {
@@ -32,6 +33,7 @@ export function AppSidebar() {
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
+  const [returnVariables, setReturnVariables] = useState<string[]>([]);
 
   return (
     <div className="relative flex flex-col h-screen bg-black text-white overflow-hidden">
@@ -73,7 +75,7 @@ export function AppSidebar() {
                   
                   <Button
                     variant="outline"
-                    className="...your styles..."
+                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105"
                     onClick={async () => {
                       try {
                         const response = await saveWorkflow();
@@ -92,7 +94,7 @@ export function AppSidebar() {
                   <Button
                     disabled={!workflowId}
                     variant="outline"
-                    className="...your styles..."
+                    className="w-full justify-start bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 text-white rounded-xl transition-all duration-300 transform hover:scale-105"
                     onClick={async () => {
                       if (!workflowId) return;
 
@@ -101,7 +103,8 @@ export function AppSidebar() {
 
                       try {
                         setIsRunning(true);
-                        const result = await runWorkflowWithAuth(workflowId, payload); 
+                        const result = await runWorkflowWithAuth(workflowId, payload,tags); 
+                        setReturnVariables(Object.values(result.variable || {}));
                         console.log('🚀 Workflow run started:', result);
                       } catch (error) {
                         console.error('❌ Failed to run workflow:', error);
@@ -131,7 +134,22 @@ export function AppSidebar() {
                 </div>
               </div>
             </div>
+            {returnVariables.length > 0 && (
+                <div className="px-3 py-2">
+                <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-white">
+                  Return Variables
+                </h2>
+                <ul className="list-disc pl-6 space-y-1">
+                  {returnVariables.map((variable, index) => (
+                  <li key={index} className="text-white/80">
+                    {variable}
+                  </li>
+                  ))}
+                </ul>
+                </div>
+            )
 
+            }
             <div className="space-y-1">
               <div className="px-3 py-2">
                 <div className="space-y-3">

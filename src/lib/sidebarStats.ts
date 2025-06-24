@@ -14,7 +14,7 @@ export type SidebarStats = {
       throw new Error("Unauthenticated");
     }
   
-    const res = await fetch("http://localhost:2706/api/v1/user/sidebar-stats", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user/sidebar-stats`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -28,4 +28,3 @@ export type SidebarStats = {
   
     return res.json();
   }
-  

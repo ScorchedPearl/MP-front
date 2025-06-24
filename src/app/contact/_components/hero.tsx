@@ -21,7 +21,7 @@ export default function Hero() {
   const onSubmit = async (data: FormData) => {
     try {
       console.log("Form Submitted:", data);
-      const response = await axios.post("http://localhost:2706/api/contact", data, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contact`, data, {
         headers: {
           "Content-Type": "application/json",
         }

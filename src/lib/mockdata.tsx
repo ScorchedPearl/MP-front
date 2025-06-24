@@ -66,17 +66,6 @@ export const nodeTemplates: NodeTemplate[] = [
     outputs: [{ id: 'output', label: 'Data', type: 'object' }],
   },
   {
-    id: '2',
-    type: 'action',
-    label: 'Send Email',
-    description: 'Send email notification',
-    category: 'Actions',
-    icon: '📧',
-    defaultConfig: { to: '', subject: '', body: '' },
-    inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
-    outputs: [{ id: 'output', label: 'Result', type: 'object' }],
-  },
-  {
     id: '3',
     type: 'condition',
     label: 'Filter',
@@ -451,7 +440,7 @@ export const nodeTemplates: NodeTemplate[] = [
       outputs: [{ id: 'output', label: 'Draft Result', type: 'object' }],
     },
     {
-      id: '28',
+      id: '2',
       type: 'gmailReply',
       label: 'Gmail Reply',
       description: 'Reply to a Gmail message',

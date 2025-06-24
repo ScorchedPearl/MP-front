@@ -1,12 +1,13 @@
 import { runWorkflow } from "@/lib/api";
 import { getGoogleToken } from "@/lib/google";
 import { useGoogleAccessTokenLogin } from "@/hooks/useGoogleAuth";
+import { Tag } from "@/components/ui/tag-input";
 
 export function useRunWorkflow() {
    console.log("first");
   const login = useGoogleAccessTokenLogin(); // safe usage of hook
 
-  return async (workflowId: string, payload: any) => {
+  return async (workflowId: string, payload: any,tags:Tag[]) => {
     let googleToken = getGoogleToken();
 
     const needsGoogleLogin = Object.values(payload.nodes || {}).some((node: any) => {
@@ -23,7 +24,7 @@ export function useRunWorkflow() {
         const checkToken = () => {
           const token = getGoogleToken();
           if (token) {
-            runWorkflow(workflowId, payload, token).then(resolve).catch(reject);
+            runWorkflow(workflowId, payload,tags, token).then(resolve).catch(reject);
           } else {
             setTimeout(checkToken, 500);
           }
@@ -32,6 +33,6 @@ export function useRunWorkflow() {
       });
     }
 
-    return runWorkflow(workflowId, payload, googleToken || undefined);
+    return runWorkflow(workflowId, payload,tags, googleToken || undefined);
   };
 }
