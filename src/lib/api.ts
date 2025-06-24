@@ -12,6 +12,7 @@ function getAuthToken() {
 export async function createWorkflow(data: {
   name: string;
   description?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   workflowData: any;
 }) {
   try {
@@ -33,6 +34,7 @@ export async function createWorkflow(data: {
 
 export async function runWorkflow(
   workflowId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   workflowData: any = {},
    tags:Tag[],
   googleToken?: string
@@ -48,6 +50,7 @@ export async function runWorkflow(
     };
 
     const nodes = workflowData?.nodes || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const hasGoogleNode = nodes.some((node: any) => {
       const url: string = node?.data?.url || "";
       const explicitGoogle = node?.data?.useGoogleAuth === true;
@@ -93,6 +96,7 @@ export async function runWorkflow(
     );
 
     return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("❌ Error running workflow:", error);
     if (axios.isAxiosError(error)) {

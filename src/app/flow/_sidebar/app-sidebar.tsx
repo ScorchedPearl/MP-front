@@ -20,7 +20,6 @@ import { serializeWorkflowForBackend } from "@/lib/serializeWorkflowData"
 import { useRunWorkflow } from "@/hooks/useRunWorkflow"
 import { useSaveWorkflow } from "@/hooks/useSaveWorkflow"
 import { InputTag, Tag } from "@/components/ui/tag-input";
-import { set } from "react-hook-form"
 
 
 export function AppSidebar() {
