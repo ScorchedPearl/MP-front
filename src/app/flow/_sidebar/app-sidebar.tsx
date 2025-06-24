@@ -134,21 +134,21 @@ export function AppSidebar() {
               </div>
             </div>
             {returnVariables.length > 0 && (
+              <div className="space-y-1">
                 <div className="px-3 py-2">
-                <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-white">
-                  Return Variables
-                </h2>
-                <ul className="list-disc pl-6 space-y-1">
-                  {returnVariables.map((variable, index) => (
-                  <li key={index} className="text-white/80">
-                    {variable}
-                  </li>
-                  ))}
-                </ul>
+                  <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-white">
+                    Return Variables
+                  </h2>
+                  <ul className="list-disc pl-6 space-y-1">
+                    {returnVariables.map((variable, index) => (
+                      <li key={index} className="text-white/80">
+                        {variable}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-            )
-
-            }
+              </div>
+            )}
             <div className="space-y-1">
               <div className="px-3 py-2">
                 <div className="space-y-3">

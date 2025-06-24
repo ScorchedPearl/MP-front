@@ -1,3 +1,4 @@
+import Link from "next/link";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -35,7 +36,9 @@ const Footer = () => {
     <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 text-white/60">
         <p>&copy; {currentYear} MarcelPearl. All rights reserved.</p>
-        <a href="#" className="hover:text-cyan-400 transition-colors">Privacy Policy</a>
+        <Link href="/privacy-policy" className="hover:text-cyan-400 transition-colors">
+        <p  className="hover:text-cyan-400 transition-colors">Privacy Policy</p>
+        </Link>
         <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a>
       </div>
       <div className="flex items-center gap-2 text-white/60">
