@@ -45,7 +45,7 @@ const Terms = () => {
             </div>
             <div className="space-y-4 text-white/70">
               <p>
-                By accessing and using our AI workflow automation platform ("Service"), you accept and agree to be bound by the terms and provision of this agreement.
+                By accessing and using our AI workflow automation platform Service, you accept and agree to be bound by the terms and provision of this agreement.
               </p>
               <p>
                 If you do not agree to abide by the above, please do not use this service. These terms apply to all users of the service, including without limitation users who are browsers, vendors, customers, merchants, and/or contributors of content.
@@ -121,7 +121,7 @@ const Terms = () => {
             </div>
             <div className="space-y-4 text-white/70">
               <p>
-                The information on this platform is provided on an "as is" basis. To the fullest extent permitted by law, this Company:
+                The information on this platform is provided on an as is basis. To the fullest extent permitted by law, this Company:
               </p>
               <ul className="space-y-2 mt-4">
                 <li className="flex items-start gap-3">
