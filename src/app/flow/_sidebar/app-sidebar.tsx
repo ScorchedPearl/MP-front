@@ -35,7 +35,7 @@ export function AppSidebar() {
   const [returnVariables, setReturnVariables] = useState<string[]>([]);
 
   return (
-    <div className="relative flex flex-col h-screen bg-black text-white overflow-hidden">
+    <div className="relative flex flex-col h-screen bg-black text-white overflow-auto">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50" />
       </div>
@@ -47,7 +47,7 @@ export function AppSidebar() {
         <div className="p-4 border-b border-white/10 backdrop-blur-sm bg-white/5">
           <div className="flex items-center gap-2">
             <Link href="/">
-              <span className="text-xl font-bold bg-gradient-to-r from bg-cyan-400 to bg-cyan-300 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent">
                 MarcelPearl
               </span>
             </Link>
@@ -103,7 +103,7 @@ export function AppSidebar() {
                       try {
                         setIsRunning(true);
                         const result = await runWorkflowWithAuth(workflowId, payload,tags); 
-                        setReturnVariables(Object.values(result.variable || {}));
+                        setReturnVariables(Object.values(result.variables || {}));
                         console.log('🚀 Workflow run started:', result);
                       } catch (error) {
                         console.error('❌ Failed to run workflow:', error);
