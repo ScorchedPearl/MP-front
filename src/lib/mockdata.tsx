@@ -213,10 +213,10 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Answer questions using AI model',
     category: 'AI',
     icon: '❓',
-    defaultConfig: { question: '', context: '' },
+    defaultConfig: { question: '', context_text: '' },
     inputs: [
       { id: 'question', label: 'Question', required: true, type: 'string' },
-      { id: 'context', label: 'Context', required: false, type: 'string' },
+      { id: 'context_text', label: 'Context', required: false, type: 'string' },
     ],
     outputs: [{ id: 'output', label: 'Answer', type: 'string' }],
   },
