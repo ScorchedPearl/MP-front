@@ -61,7 +61,18 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Trigger workflow via HTTP webhook',
     category: 'Triggers',
     icon: '🔗',
-    defaultConfig: { url: '', method: 'POST' },
+    defaultConfig: {
+    url: "https://webhook.site/your-fixed-endpoint",
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer fixed-token",
+      "Content-Type": "application/json"
+    },
+    payload: {
+      userId: "12345",
+      email: "user@example.com"
+    }
+  },  
     inputs: [],
     outputs: [{ id: 'output', label: 'Data', type: 'object' }],
   },
@@ -72,7 +83,16 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Filter data based on conditions',
     category: 'Logic',
     icon: '🎯',
-    defaultConfig: { condition: '' },
+    defaultConfig: {
+      defaultConfig: {
+        condition: {
+          field: "status",          
+          operator: "==",           
+          value: "approved"         
+        }
+      }
+      
+    },
     inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
     outputs: [
       { id: 'true', label: 'True', type: 'object' },
@@ -86,7 +106,13 @@ export const nodeTemplates: NodeTemplate[] = [
     description: 'Transform and map data',
     category: 'Processing',
     icon: '🔄',
-    defaultConfig: { mapping: {} },
+    defaultConfig: {
+      mapping: {
+        fullName: 'name',
+        emailAddress: 'email',
+        ageInYears: 'age'
+      }
+    },
     inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
     outputs: [{ id: 'output', label: 'Transformed', type: 'object' }],
   },
@@ -113,10 +139,12 @@ export const nodeTemplates: NodeTemplate[] = [
     category: 'Actions',
     icon: '🔍',
     defaultConfig: {
-      url: 'https://api.example.com/data',
-      method: 'GET',
-      headers: '{}',
-      body: '{}',
+      url: "https://jsonplaceholder.typicode.com/posts",
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      },
+      body: null,
       useGoogleAuth: false
     },
     inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
@@ -130,12 +158,19 @@ export const nodeTemplates: NodeTemplate[] = [
     category: 'Actions',
     icon: '📤',
     defaultConfig: {
-      url: 'https://api.example.com/create',
-      method: 'POST',
-      headers: '{ "Content-Type": "application/json" }',
-      body: '{ "key": "value" }',
+      url: "https://jsonplaceholder.typicode.com/posts",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        title: "Sample Title",
+        body: "Sample content",
+        userId: 1
+      },
       useGoogleAuth: false
-    },
+    }
+    ,
     inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
     outputs: [{ id: 'output', label: 'Response', type: 'object' }],
   },
@@ -149,8 +184,12 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: {
       url: 'https://api.example.com/resource',
       method: 'PUT',
-      headers: '{ "Content-Type": "application/json" }',
-      body: '{ "updatedKey": "updatedValue" }',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        updatedKey: "updatedValue"
+      },
       useGoogleAuth: false
     },
     inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
@@ -166,8 +205,10 @@ export const nodeTemplates: NodeTemplate[] = [
     defaultConfig: {
       url: 'https://api.example.com/resource/123',
       method: 'DELETE',
-      headers: '{}',
-      body: '{}',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: null,
       useGoogleAuth: false
     },
     inputs: [{ id: 'input', label: 'Input', required: false, type: 'object' }],
@@ -300,14 +341,14 @@ export const nodeTemplates: NodeTemplate[] = [
     category: 'Actions',
     icon: '📅',
     defaultConfig: {
-      summary: '',
-      startTime: '',
-      endTime: '',
-      description: '',
-      location: '',
+      summary: 'Team Sync Meeting',
+      startTime: '27 June 2025, 10:00 AM',
+      endTime: '27 June 2025, 11:00 AM',
+      description: 'Weekly team sync to discuss project updates and blockers.',
+      location: 'Zoom - https://zoom.us/j/1234567890',
       calendarId: 'primary',
       useGoogleAuth: true,
-    },
+    },    
     inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
     outputs: [{ id: 'output', label: 'Calendar Event', type: 'object' }],
   },
@@ -364,11 +405,11 @@ export const nodeTemplates: NodeTemplate[] = [
       category: 'Gmail',
       icon: '📧',
       defaultConfig: {
-        to: '',
-        subject: '',
-        body: '',
-        cc: '',
-        bcc: '',
+        to: "primary@example.com",
+        cc: "cc1@example.com, cc2@example.com",     
+        bcc: "hidden1@example.com, hidden2@example.com", 
+        subject: "Hello from Workflow",
+        body: "This is an automated email sent from your workflow.",
         useGoogleAuth: true,
       },
       inputs: [{ id: 'input', label: 'Data', required: false, type: 'object' }],
@@ -398,9 +439,9 @@ export const nodeTemplates: NodeTemplate[] = [
       category: 'Gmail',
       icon: '👁️',
       defaultConfig: {
-        messageIds: '',
+        messageIds: "18c1234567890abcdef, 18cabcdef1234567890",
         markAsRead: true,
-        useGoogleAuth: true,
+        useGoogleAuth: true
       },
       inputs: [{ id: 'input', label: 'Message Data', required: true, type: 'object' }],
       outputs: [{ id: 'output', label: 'Update Result', type: 'object' }],
@@ -413,9 +454,9 @@ export const nodeTemplates: NodeTemplate[] = [
       category: 'Gmail',
       icon: '🏷️',
       defaultConfig: {
-        messageIds: '',
-        labelsToAdd: '',
-        labelsToRemove: '',
+        messageIds: "18c1234567890abcdef, 18cabcdef1234567890",
+        labelsToAdd: "SPAM",
+        labelsToRemove: "UNREAD",
         useGoogleAuth: true,
       },
       inputs: [{ id: 'input', label: 'Message Data', required: true, type: 'object' }],
@@ -429,12 +470,12 @@ export const nodeTemplates: NodeTemplate[] = [
       category: 'Gmail',
       icon: '📝',
       defaultConfig: {
-        to: '',
-        subject: '',
-        body: '',
-        cc: '',
-        bcc: '',
-        useGoogleAuth: true,
+        to: "recipient@example.com",
+        cc: "ccuser1@example.com, ccuser2@example.com",
+        bcc: "bccuser1@example.com, bccuser2@example.com",
+        subject: "Draft Subject",
+        body: "This is the body of the draft email.",
+        useGoogleAuth: true
       },
       inputs: [{ id: 'input', label: 'Draft Data', required: false, type: 'object' }],
       outputs: [{ id: 'output', label: 'Draft Result', type: 'object' }],
@@ -447,12 +488,27 @@ export const nodeTemplates: NodeTemplate[] = [
       category: 'Gmail',
       icon: '↩️',
       defaultConfig: {
-        messageId: '',
-        replyBody: '',
+        messageId: "18cabcdef1234567890",  
+        replyBody: "Thank you for your email. I'll get back to you shortly.",
         replyAll: false,
-        useGoogleAuth: true,
+        useGoogleAuth: true
       },
       inputs: [{ id: 'input', label: 'Reply Data', required: true, type: 'object' }],
       outputs: [{ id: 'output', label: 'Reply Result', type: 'object' }],
     },
+    {
+      id: '28',
+      type: 'action',
+      label: 'Send Email',
+      description: 'Send email notification',
+      category: 'Actions',
+      icon: '📧',
+      defaultConfig: {
+        to: "recipient@example.com",      
+        subject: "Notification Subject",  
+        body: "This is the message body." 
+      },
+      inputs: [{ id: 'input', label: 'Data', required: true, type: 'object' }],
+      outputs: [{ id: 'output', label: 'Result', type: 'object' }]
+    }
   ];
