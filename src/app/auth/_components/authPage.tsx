@@ -89,7 +89,7 @@ export default function AuthPage() {
       localStorage.removeItem("currentOtp");
 
       signUp(email as string,password as string,name as string)
-
+      redirect("/flow");
     } 
 
     else {
@@ -98,7 +98,7 @@ export default function AuthPage() {
       signIn(email as string,password as string)
       }
     reset();
-    redirect("/");
+    redirect("/flow");
   };
 
   const googlelogin = useGoogleLogin({
